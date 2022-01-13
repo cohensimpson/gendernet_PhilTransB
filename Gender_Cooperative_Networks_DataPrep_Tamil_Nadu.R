@@ -355,7 +355,19 @@ individuals.TN.13$Status_2017[individuals.TN.13$Status_2017 == "Widowed"] <- "No
 TN.relatedness.immediate <- (TN.relatedness == 0.5)*1 ## Multiplying the matrix of logicals/booleans by one produces a binary matrix of zeros and ones for whether or not two people are immediate kin.
 
 
-## SECOND, identify those who are married in 2013, excluding people who are divorced/separated — BUT NOT PEOPLE WHO ARE WIDOWED (see above)! 
+## SECOND, add in a number of ancestral partnerships that create affinal relatedness, but who are generally long-deceased, and so about whose marriage we know little
+## We identify these relationships through their presence in the parents data frame and their absence from the romantic.partnerships data frame, and add the missing cases
+## In all cases, the relevant parties are dead, so we list them as "Widowed"
+parents.temp <- parents
+parents.temp$InPartnerships <- paste0(parents$Father,"_",parents$Mother) %in% paste0(romantic.partnerships$Husband,"_",romantic.partnerships$Wife)
+parents.temp$ToAdd <- parents.temp$InPartnerships == FALSE & parents.temp$Father != "999" & parents.temp$Mother != "999"
+to.add <- data.frame("Husband" = parents.temp$Father, "Wife" = parents.temp$Mother, "Status_2013" = "Widowed", "Status_2017"= "Widowed", "NotDivorced_13"= 1, "NotDivorced_17"= 1)
+to.add <- subset(to.add, parents.temp$ToAdd == TRUE)
+
+romantic.partnerships <- rbind(romantic.partnerships, to.add)
+
+
+## THIRD, identify those who are married in 2013, excluding people who are divorced/separated — BUT NOT PEOPLE WHO ARE WIDOWED (see above)! 
 ## Excluding divorcees removes the *direct* connection between the former spouses. Thus, paths will not run via those who are divorced, severing affinal links.
 ## However, if former spouses have had children, they will be *indirectly* connected via their offspring. 
 ## Accordingly, affinal relatedness for the family members of the ex-spouses will still exist. 
@@ -370,12 +382,12 @@ romantic.partnerships.married.13 <- subset(romantic.partnerships, NotDivorced_13
 
 
 
-## THIRD, construct a data frame of spousal dyads for 2013 (i.e., Husband_ID + Wife_ID)
+## FOURTH, construct a data frame of spousal dyads for 2013 (i.e., Husband_ID + Wife_ID)
 ## Recall from above that "NotDivorced_13" is simply a binary vector for people who are Married/Widowed (== 1) or Divorced (== 0).
 romantic.partnerships.married.13 <- romantic.partnerships.married.13[, c("Husband", "Wife", "NotDivorced_13")] 
 
 
-## FOURTH, create a symmetric matrix for 2013 spousal relationships, populated with values from romantic.partnerships.married.13.
+## FIFTH, create a symmetric matrix for 2013 spousal relationships, populated with values from romantic.partnerships.married.13.
 ## Note that we use ALL individuals in the pedigree for the two villages — both dead and alive — hence the pegging of spouse.matrix to TN.relatedness
 spouse.matrix <- matrix(data = 0, nrow = nrow(TN.relatedness.immediate), ncol = ncol(TN.relatedness.immediate))
 rownames(spouse.matrix) <- rownames(TN.relatedness.immediate)
@@ -391,38 +403,41 @@ rm(i)
 table(spouse.matrix == t(spouse.matrix)) ## Sanity check. Should all be TRUE.
 
 
-## One Husband ("id1013") does not appear in the raw/binary genetic kinship matrix/the pedegiree/the parents data frame. Could this be a mislabel of individual "id1031"?
+## Checks for missing entries.
 setdiff(romantic.partnerships.married.13$Husband, rownames(TN.relatedness.immediate))
 setdiff(romantic.partnerships.married.13$Wife, rownames(TN.relatedness.immediate))
 
 
-## FIFTH, create a composite binary matrix for immediate kin dyads and for spousal dyads which will be used to calculate the affinal path lengths.
+## SIXTH, create a composite binary matrix for immediate kin dyads and for spousal dyads which will be used to calculate the affinal path lengths.
 immediate.family <- TN.relatedness.immediate + spouse.matrix
 
 
-## SIXTH, convert immediate.family into a proper network object in order to calculate the length of the shortest path between all members of the pedigree for the two villages using distances().
+## SEVENTH, convert immediate.family into a proper network object in order to calculate the length of the shortest path between all members of the pedigree for the two villages using distances().
 ## Note that distances() will produce a symmetric matrix. Also, the shortest path length from a vertex to itself is always zero. For unreachable vertices Inf is included.
 immediate.family.net <- igraph::graph_from_adjacency_matrix(immediate.family, mode = "undirected", weighted = NULL)
 affinal.path.length <- igraph::distances(immediate.family.net, mode = "all", algorithm = "unweighted", weights = NULL)
 
 
-## SEVENTH, derive affinal relatedness by dividing one by two raised to the power of the length of the shortest path "g" between two people in the immediate kin "network" (i.e., (1/(2^g)) )
+## EIGHTH, derive affinal relatedness by dividing one by two raised to the power of the length of the shortest path "g" between two people in the immediate kin "network" (i.e., (1/(2^g)) )
 ## This function says: "For every row (i.e., MARGIN == 1) of the matrix X, raise the integer 2 to the inverse power of each element of the row g".
 ## Note that by using a negative exponent, one is simply taking the inverse/reciprocal of the base of the expression to the gth power. 
 ## For example, for g == 2, (2^-2) is equal to (1/(2^2)) and, for g == 4, (2^-4) is equal to (1/(2^4)). 
 ## Also, note that an exponent of one (i.e., immediate kin and spouses) resolves to the base of the expression. Thus (2^-1) is equal to (1/(2^1)) or (1/(2)).
 TN.relatedness.affinal <- apply(X = affinal.path.length, MARGIN = 1, FUN = function(g){2^-g}) 
 TN.relatedness.affinal <- TN.relatedness.affinal - TN.relatedness
-print(range(TN.relatedness.affinal)) ## Negative values???
+
+## NINTH, remove values below 0.125
+## note that we get some NEGATIVE values here. These reflect cases of affinal relatedness that is set to 0 in the romantic.partnerships.married.13 file. 
+## For example: TN00201 is shown as having a negative affinal relatedness value of -0.375 with TN00208, his granddaughter. 
+## This is because TN00208 was born in 2017, and their parents were not married in 2013, so their spousal connection is not considered here. 
+## We also are less sure about our coverage at lower values, so will censor below 0.125 (which represents, for example, ego's child's spouse's parent; ego's spouse's grandparent, etc.)
+table(TN.relatedness.affinal)
+TN.relatedness.affinal[TN.relatedness.affinal<0.125] <- 0
 
 
-## EIGHTH/FINALLY, construct village-specific affinal relatedness matrices by filtering the master affinal relatedness matrix to retain only the 2013 study participants.
+## TENTH/FINALLY, construct village-specific affinal relatedness matrices by filtering the master affinal relatedness matrix to retain only the 2013 study participants.
 relatedness.affinalTN.13 <- TN.relatedness.affinal[individuals.TN.13$IndivID, individuals.TN.13$IndivID]
-print(range(relatedness.affinalTN.13)) ## Negative values???
-
-
-## Which Spousal dyads DO NOT appear in the set of parents?
-setdiff(paste0(romantic.partnerships.married.13$Husband,"_",romantic.partnerships.married.13$Wife), paste0(parents$Father,"_",parents$Mother))
+table(relatedness.affinalTN.13)
 
 
 
