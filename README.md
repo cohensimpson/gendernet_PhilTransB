@@ -1,4 +1,4 @@
-# Dynamics of Cooperative Networks Partially Attributable to Gender amongst South Indian Tamils (Simpson & Power, 2022, Philos. Trans. R. Soc. Lond., B, Biol. Sci.)
+# Dynamics of Cooperative Networks Partially Attributable to Gender amongst South Indian Tamils (Simpson & Power, Forthcoming, Philos. Trans. R. Soc. Lond., B, Biol. Sci.)
 
 ## Abstract
 Social support is thought to play a major role in the genetic and cultural evolution of group-living animals Yet, little is known about how the strategies individuals use to access aid vary between the sexes. Here we investigate whether human males and females amass supportive social bonds by differentially adhering to mechanisms of cooperation well-established by evolutionary and sociological theory (e.g., kin selection, generalised exchange). Spanning five years, our data detail gender and sources of aid for virtually all adults in two South Indian villages (782 adults [446 Women]). Simulated network dynamics (Stochastic Actor-Oriented Models) calibrated to these data indicate that women are no more or less likely than men to seek aid, call on kin, or pursue help from similarly-ranked peers. Still, women are more likely to accrue supportive bonds by utilising reciprocity, calling on friends, petitioning popular patrons, turning to same-gender peers, and building egalitarian, but not hierarchical, support groups. Findings are robust to geoposition and demographic constraints on activity (e.g., age, education, caste). And they suggest nuanced divergence in the cooperative behaviour of men and women obscured by overbroad evolutionary predictions about sex and sociality and by fixation on sex and ego-network size versus the dynamics of population-spanning networks.
@@ -50,7 +50,7 @@ Finally, when re-running our analyses, some numerical results may differ slightl
 
 
 ## Key Citations for Replicators
-[1] Simpson, C.R. & Power, E.A. Forthcomming. “Dynamics of cooperative networks partially attributable to gender amongst South Indian Tamils.” Philosophical Transactions of the Royal Society B: Biological Sciences.
+[1] Simpson, C.R. & Power, E.A. Forthcoming. “Dynamics of cooperative networks partially attributable to gender amongst South Indian Tamils.” Philosophical Transactions of the Royal Society B: Biological Sciences.
 
 [2] Power, E.A. (2017). Social Support Networks and Religiosity in Rural South India. Nature Human Behaviour, 1(3), 0057. https://doi.org/10.1038/s41562-017-0057
 
