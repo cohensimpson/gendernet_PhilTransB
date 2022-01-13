@@ -292,11 +292,19 @@ table(diag(TN.relatedness)) ## There are a few values above 1, which is due to c
 
 diag(TN.relatedness) <- 1 ## 1's along the diagonal (One's relatedness to themselves). 
 
+## Remove values below 0.125
+## We cannot be sure of the comprehensiveness of our kinship data at lower values (because we may not have the full set of potentially linking relatives)
+## So, we will censor below 0.125 (which represents, for example, ego’s cousin or great-grandchildren or great-grandparent, etc.)
+TN.relatedness[TN.relatedness<0.125] <- 0
+
 
 ## Construct village-specific relatedness matrices by filtering the master relatedness matrix, retaining only the 2013 study participants
 setdiff(individuals.TN.13$IndivID, colnames(TN.relatedness))
 
 relatednessTN.13 <- TN.relatedness[individuals.TN.13$IndivID, individuals.TN.13$IndivID]
+
+
+
 
 
 
@@ -429,7 +437,7 @@ TN.relatedness.affinal <- TN.relatedness.affinal - TN.relatedness
 ## NINTH, remove values below 0.125
 ## note that we get some NEGATIVE values here. These reflect cases of affinal relatedness that is set to 0 in the romantic.partnerships.married.13 file. 
 ## For example: TN00201 is shown as having a negative affinal relatedness value of -0.375 with TN00208, his granddaughter. 
-## This is because TN00208 was born in 2017, and their parents were not married in 2013, so their spousal connection is not considered here. 
+## This is because TN00208 was born in 2017, and her parents were not married in 2013, so their spousal connection is not considered here. 
 ## We also are less sure about our coverage at lower values, so will censor below 0.125 (which represents, for example, ego's child's spouse's parent; ego's spouse's grandparent, etc.)
 table(TN.relatedness.affinal)
 TN.relatedness.affinal[TN.relatedness.affinal<0.125] <- 0
