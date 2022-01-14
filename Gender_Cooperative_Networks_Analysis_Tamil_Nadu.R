@@ -27,13 +27,14 @@ library(groundhog)
 ## project with the replication materials and it should also be installed manually first.
 
 ## Finally, note that groundhog may prompt you to restart R immediately after loading packages due to version clashes and then reload the packages with groundhog again.
-## This is a bit annoying, but please be sure to follow the groundhog prompts. 
+## This is a bit annoying, but please be sure to follow the groundhog prompts.
 
 groundhog.library("tidyverse", "2021-10-10", quiet.install = FALSE) ## You may also need to install GFortran which is used to install the Matrix package
 groundhog.library("purrr", "2021-10-10", quiet.install = FALSE)
 
 groundhog.library("network", "2021-10-10", quiet.install = FALSE)
 groundhog.library("sna", "2021-10-10", quiet.install = FALSE)
+groundhog.library("igraph", "2021-10-10", quiet.install = FALSE)
 
 groundhog.library("kinship2", "2021-10-10", quiet.install = FALSE)
 
