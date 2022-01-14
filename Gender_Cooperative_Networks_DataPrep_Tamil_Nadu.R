@@ -292,10 +292,10 @@ table(diag(TN.relatedness)) ## There are a few values above 1, which is due to c
 
 diag(TN.relatedness) <- 1 ## 1's along the diagonal (One's relatedness to themselves). 
 
-## Remove values below 0.125
+## Remove values below 0.0625
 ## We cannot be sure of the comprehensiveness of our kinship data at lower values (because we may not have the full set of potentially linking relatives)
-## So, we will censor below 0.125 (which represents, for example, ego’s cousin or great-grandchildren or great-grandparent, etc.)
-TN.relatedness[TN.relatedness<0.125] <- 0
+## So, we will censor below 0.0625 (which represents, for example, ego’s cousin or great-grandchildren or great-grandparent, etc.)
+TN.relatedness[TN.relatedness < 0.0625] <- 0
 
 
 ## Construct village-specific relatedness matrices by filtering the master relatedness matrix, retaining only the 2013 study participants
@@ -309,8 +309,6 @@ relatednessTN.13 <- TN.relatedness[individuals.TN.13$IndivID, individuals.TN.13$
 
 
 ######################################### Variable Construction: Partnership Status #########################################
-# romantic.partnerships$NotDivorced_13 <- ifelse(romantic.partnerships$Status_2013 %in% c("Married"), 1, 0)
-# romantic.partnerships$NotDivorced_17 <- ifelse(romantic.partnerships$Status_2017 %in% c("Married"), 1, 0)
 romantic.partnerships$NotDivorced_13 <- ifelse(romantic.partnerships$Status_2013 %in% c("Married", "Widowed"), 1, 0)
 romantic.partnerships$NotDivorced_17 <- ifelse(romantic.partnerships$Status_2017 %in% c("Married", "Widowed"), 1, 0)
 
@@ -363,16 +361,24 @@ individuals.TN.13$Status_2017[individuals.TN.13$Status_2017 == "Widowed"] <- "No
 TN.relatedness.immediate <- (TN.relatedness == 0.5)*1 ## Multiplying the matrix of logicals/booleans by one produces a binary matrix of zeros and ones for whether or not two people are immediate kin.
 
 
-## SECOND, add in a number of ancestral partnerships that create affinal relatedness, but who are generally long-deceased, and so about whose marriage we know little
-## We identify these relationships through their presence in the parents data frame and their absence from the romantic.partnerships data frame, and add the missing cases
-## In all cases, the relevant parties are dead, so we list them as "Widowed"
-parents.temp <- parents
-parents.temp$InPartnerships <- paste0(parents$Father,"_",parents$Mother) %in% paste0(romantic.partnerships$Husband,"_",romantic.partnerships$Wife)
-parents.temp$ToAdd <- parents.temp$InPartnerships == FALSE & parents.temp$Father != "999" & parents.temp$Mother != "999"
-to.add <- data.frame("Husband" = parents.temp$Father, "Wife" = parents.temp$Mother, "Status_2013" = "Widowed", "Status_2017"= "Widowed", "NotDivorced_13"= 1, "NotDivorced_17"= 1)
-to.add <- subset(to.add, parents.temp$ToAdd == TRUE)
+## SECOND, we must account for ancestral partnerships between people who are generally long-deceased and thus who's marriages we know little about. 
+## Specifically, we identify ancestral partnerships through their presence in our data on parentage and their absence from our data on romantic partnerships.
+## In all cases, the relevant parties are dead, so we list them as "Widowed" when adding the ancestral partnerships to our romantic partnerships data.
+parents.temp <- parents ## Create a copy of the parents data we can modify so we do not destroy the original.
+parents.temp$InPartnerships <- paste0(parents$Father,"_",parents$Mother) %in% paste0(romantic.partnerships$Husband,"_",romantic.partnerships$Wife) ## Identify which pairs of people produce offspring but do not appear in the romantic partnerships data
+parents.temp$ToAdd <- (parents.temp$InPartnerships == FALSE & parents.temp$Father != "999" & parents.temp$Mother != "999") ## This says, "identify which sets of parents are ancestral and lacking identification [i.e., missing ID code 999]"
+parents.temp <- data.frame(Husband = parents.temp$Father, ## This create a data frame of ALL pairs of people who produce children which we need to filter based on ToAdd, otherwise the variables Status_2013/2017 and NotDivorced_13/17 are incorrect!
+                     Wife = parents.temp$Mother, 
+                     Status_2013 = "Widowed",
+                     Status_2017 = "Widowed", 
+                     NotDivorced_13 = 1,
+                     NotDivorced_17 = 1,
+                     ToAdd = parents.temp$ToAdd 
+                     )
+parents.temp <- subset(parents.temp, parents.temp$ToAdd == TRUE)
+parents.temp$ToAdd <- NULL
 
-romantic.partnerships <- rbind(romantic.partnerships, to.add)
+romantic.partnerships <- rbind(romantic.partnerships, parents.temp) ## Merge the ancestral partnerships with the known romantic partnerships
 
 
 ## THIRD, identify those who are married in 2013, excluding people who are divorced/separated — BUT NOT PEOPLE WHO ARE WIDOWED (see above)! 
@@ -387,7 +393,6 @@ romantic.partnerships <- rbind(romantic.partnerships, to.add)
 ## But, if they had stayed married, affinal relatedness between the ex-husband and the ex-brother-in-law would have been 0.25.
 ## This is because the affinal path would have run from the ex-husband to the ex-wife and then from the ex-wife to the ex-brother-in-law (two steps versus three step)
 romantic.partnerships.married.13 <- subset(romantic.partnerships, NotDivorced_13 == 1) 
-
 
 
 ## FOURTH, construct a data frame of spousal dyads for 2013 (i.e., Husband_ID + Wife_ID)
@@ -409,6 +414,8 @@ for(i in 1:nrow(romantic.partnerships.married.13)){
 }
 rm(i)
 table(spouse.matrix == t(spouse.matrix)) ## Sanity check. Should all be TRUE.
+## N.B. sum(spouse.matrix)/2 != nrow(romantic.partnerships.married.13) as one couple in romantic.partnerships.married.13 were married, then divorced, and then remarried in 2013 such that their spousal dyad appears twice. 
+## RUN: paste0(romantic.partnerships$Husband,"_",romantic.partnerships$Wife)[duplicated(paste0(romantic.partnerships$Husband,"_",romantic.partnerships$Wife))]
 
 
 ## Checks for missing entries.
@@ -434,13 +441,16 @@ affinal.path.length <- igraph::distances(immediate.family.net, mode = "all", alg
 TN.relatedness.affinal <- apply(X = affinal.path.length, MARGIN = 1, FUN = function(g){2^-g}) 
 TN.relatedness.affinal <- TN.relatedness.affinal - TN.relatedness
 
-## NINTH, remove values below 0.125
-## note that we get some NEGATIVE values here. These reflect cases of affinal relatedness that is set to 0 in the romantic.partnerships.married.13 file. 
-## For example: TN00201 is shown as having a negative affinal relatedness value of -0.375 with TN00208, his granddaughter. 
-## This is because TN00208 was born in 2017, and her parents were not married in 2013, so their spousal connection is not considered here. 
-## We also are less sure about our coverage at lower values, so will censor below 0.125 (which represents, for example, ego's child's spouse's parent; ego's spouse's grandparent, etc.)
+
+## NINTH, remove values below 0.0625
+## Note that we get some NEGATIVE values here. This is the result of dyads wherein affinal relatedness is set to zero due to the absence of data on romantic partnerships in 2013. 
+## For example, TN00201 is shown as having a negative affinal relatedness value of -0.375 with TN00208 his granddaughter after we subtract TN.relatedness from TN.relatedness.affinal.
+## This is the result of TN00208 being born in 2017 while her parents were not married in 2013 resulting in the absence of their spousal connection in the immediate-family network.
+## Put alternatively, there is no way to "step" from TN00201 to TN00208 in the immediate-family network which only considers close genetic kin (relatedness == 0.5 and 2013 spouses).
+## Like with constanguineal relatedness, we censor values below 0.0625 as we are unsure about the completeness of our data for more distant relatives.
+## Here, by censoring values below 0.0625 we only capture, for example, ego's child's spouse's parent, ego's spouse's grandparent, etc.
 table(TN.relatedness.affinal)
-TN.relatedness.affinal[TN.relatedness.affinal<0.125] <- 0
+TN.relatedness.affinal[TN.relatedness.affinal < 0.0625] <- 0
 
 
 ## TENTH/FINALLY, construct village-specific affinal relatedness matrices by filtering the master affinal relatedness matrix to retain only the 2013 study participants.
