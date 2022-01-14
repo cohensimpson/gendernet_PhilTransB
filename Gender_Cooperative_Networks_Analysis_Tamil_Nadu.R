@@ -248,10 +248,10 @@ villagers <- sienaNodeSet(villagers.size, nodeSetName = "villagers", names = vil
 
 
 #################################### THE DEPENDENT NETWORK
-### First we need a 3D array of network snapshots/waves
-### Here, were index villages.TN.socialsupport.13.17 by village and then by wave
-### Second, we add the structurally-determined values to the second wave in order to tell SIENA which villagers have moved away/died
-### N.B. structural code 10 indicates ties that are impossible.
+### To fit the SAOMs, we need a 3D array of network snapshots/waves.
+### However, before we do that, we need to add the structurally-determined values to the second wave in order to tell SIENA which villagers have moved away/died.
+### N.B. Structural Code 10 indicates ties that are impossible.
+## FIRST, create new matrix object we can modify without destroying the originals.
 wave.13 <- socialsupportTN.13
 wave.17 <- socialsupportTN.17
 
@@ -265,18 +265,29 @@ table(list( "Did Survey" = individuals.TN.13$DidSurvey17, ## 190 residents prese
 )
 
 
-rowSums(wave.17[which(individuals.TN.13$DidSurvey17 == FALSE), ]) == 0 ## Sanity Check. 190 actors who exit the network in 2017
+rowSums(wave.17[which(individuals.TN.13$DidSurvey17 == FALSE), ]) == 0 ## Sanity Check. 190 actors exit the network in 2017 and they should all have zero outgoing ties.
 table(rowSums(wave.17[which(individuals.TN.13$DidSurvey17 == FALSE), ]) == 0) 
-sum(wave.17[, which(individuals.TN.13$DidSurvey17 == FALSE)]) ## Number of ties to people who were present in 2013 but abscent in 2017
 
+sum(wave.17[, which(individuals.TN.13$DidSurvey17 == FALSE)]) ## Number of ties from the 782 people who were present in 2013 to the 190 people who were absent in 2017; RUN: dim(wave.17[, which(individuals.TN.13$DidSurvey17 == FALSE)])
+length(which(colSums(wave.17[, which(individuals.TN.13$DidSurvey17 == FALSE)]) > 0)) ## 102 people present in 2013 but absent in 2017 receive nominations in 2017.
+
+## Of the 102 people present in 2013 but absent in 2017 receive nominations in 2017, how many were in/outside of the village and alive/dead?
+table(list( "Did Survey" = individuals.TN.13[names(which(colSums(wave.17[, which(individuals.TN.13$DidSurvey17 == FALSE)]) > 0)), "DidSurvey17"], 
+            "Alive" = individuals.TN.13[names(which(colSums(wave.17[, which(individuals.TN.13$DidSurvey17 == FALSE)]) > 0)), "Living_2017"], 
+            "In Village" = individuals.TN.13[names(which(colSums(wave.17[, which(individuals.TN.13$DidSurvey17 == FALSE)]) > 0)), "Residing_2017"])
+)
+
+
+## SECOND, add the Structural Zeros/Structural Code 10 to the wave-two sociomatrix.
 wave.17[which(individuals.TN.13$DidSurvey17 == FALSE), ] <- 10 ## Making this change tells SIENA that ties from actors who do not participate in the survey in 2017 are impossible
 wave.17[, which(individuals.TN.13$DidSurvey17 == FALSE)] <- 10 ## Making this change tells SIENA that ties to actors who do not participate in the survey in 2017 are impossible/this ensures that we only model ties between people within each village who participate in the survey in 2017.
 
 
+## THIRD, create our 3D array using the modified sociomatrices.
 support_array <- array(data = c(wave.13, wave.17), dim = c(villagers.size, villagers.size, 2))
 
 
-#### Next, formally create the SIENA dependent network object
+## FOURTH, formally create the SIENA dependent network object.
 support_net <- sienaNet(support_array, type = "oneMode", nodeSet = "villagers"
                         , allowOnly = FALSE)
 
