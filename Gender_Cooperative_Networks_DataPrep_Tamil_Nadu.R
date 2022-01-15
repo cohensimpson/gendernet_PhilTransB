@@ -443,10 +443,10 @@ TN.relatedness.affinal <- TN.relatedness.affinal - TN.relatedness
 
 
 ## NINTH, remove values below 0.0625
-## Note that we get some NEGATIVE values here. This is the result of dyads wherein affinal relatedness is set to zero due to the absence of data on romantic partnerships in 2013. 
+## Note that we get some NEGATIVE values here.
 ## For example, TN00201 is shown as having a negative affinal relatedness value of -0.375 with TN00208 his granddaughter after we subtract TN.relatedness from TN.relatedness.affinal.
 ## This is the result of TN00208 being born in 2017 while her parents were not married in 2013 resulting in the absence of their spousal connection in the immediate-family network.
-## Put alternatively, there is no way to "step" from TN00201 to TN00208 in the immediate-family network which only considers close genetic kin (relatedness == 0.5 and 2013 spouses).
+## Put alternatively, there is no way to "step" from TN00201 to TN00208 in the immediate-family network which only considers close genetic kin (relatedness == 0.5) and 2013 spouses.
 ## Like with constanguineal relatedness, we censor values below 0.0625 as we are unsure about the completeness of our data for more distant relatives.
 ## Here, by censoring values below 0.0625 we only capture, for example, ego's child's spouse's parent, ego's spouse's grandparent, etc.
 table(TN.relatedness.affinal)
