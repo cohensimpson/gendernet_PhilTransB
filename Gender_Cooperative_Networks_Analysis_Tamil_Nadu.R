@@ -445,7 +445,7 @@ modelparams <- sienaAlgorithmCreate(projname = "Gender_Cooperation_Tamil_Nadu_20
                                     # Number of iterations in phase 3. For regular use with the Method of Moments, n3 = 1000
                                     # mostly suffices. For use in publications and for Maximum Likelihood, at least n3 = 3000
                                     # is advised. Sometimes much higher values are required for stable estimation of standard errors.
-                                    , n3 = 20000
+                                    , n3 = 30000
                                     
                                     # This determines the step sizes in the estimation algorithm. If the algorithm is unstable 
                                     # (e.g., oscillating between wild parameter estimates and convergence from run to run),
