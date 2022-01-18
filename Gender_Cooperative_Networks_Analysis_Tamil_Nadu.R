@@ -509,7 +509,7 @@ fit.1.ans <- siena07RunToConvergence(alg = modelparams, dat = villages.TN.sienaD
 
 
 
-## Model 2: Fully Interacted Model (Typically Converges After Two Iterations of siena07RunToConvergence)
+## Model 2: Fully Interacted Model (Typically Converges After Four Iterations of siena07RunToConvergence)
 fit.2.modeffects <- includeEffects(fit.1.modeffects, egoX, name = "support_net", interaction1 = "gender", type = "eval", fix = FALSE, verbose = FALSE) 
 
 fit.2.modeffects <- includeInteraction(fit.2.modeffects, egoX, recip, interaction1 = c("gender", ""), name = "support_net", type = "eval", fix = FALSE, verbose = FALSE)
