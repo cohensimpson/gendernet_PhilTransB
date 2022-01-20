@@ -571,7 +571,7 @@ fit.3.ans <- siena07RunToConvergence(alg = modelparams, dat = villages.TN.sienaD
 fit.2.ans.Walt.test <- Multipar.RSiena(ans = fit.2.ans, c(13, 21:38)) ## Positive integers specify the tested effects (as numbered in "print(ans)" )
 print(fit.2.ans.Walt.test)
 
-fit.3.ans.Walt.test <- Multipar.RSiena(ans = fit.3.ans, c(15:16, 18, 20:22, 24:26))
+fit.3.ans.Walt.test <- Multipar.RSiena(ans = fit.3.ans, c(15:16, 18, 20, 21, 23:25))
 print(fit.3.ans.Walt.test)
 
 
