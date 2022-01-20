@@ -548,7 +548,7 @@ fit.2.ans <- siena07RunToConvergence(alg = modelparams, dat = villages.TN.sienaD
 
 
 
-## Model 3: Social Constraints Adjusted Model (Typically Converges After Four Iterations of siena07RunToConvergence)
+## Model 3: Social Constraints Adjusted Model (Typically Converges After Six Iterations of siena07RunToConvergence)
 fit.3.modeffects <- includeEffects(fit.2.modeffects, egoX, name = "support_net", interaction1 = "age", type = "eval", fix = FALSE, verbose = FALSE) 
 fit.3.modeffects <- includeEffects(fit.3.modeffects, egoSqX, name = "support_net", interaction1 = "age", type = "eval", fix = FALSE, verbose = FALSE) 
 fit.3.modeffects <- includeEffects(fit.3.modeffects, egoX, name = "support_net", interaction1 = "education", type = "eval", fix = FALSE, verbose = FALSE) 
