@@ -29,7 +29,6 @@ library(groundhog)
 ## Finally, note that groundhog may prompt you to restart R immediately after loading packages due to version clashes and then reload the packages with groundhog again.
 ## This is a bit annoying, but please be sure to follow the groundhog prompts.
 
-groundhog.library("tidyverse", "2021-10-10", quiet.install = FALSE) ## You may also need to install GFortran which is used to install the Matrix package
 groundhog.library("purrr", "2021-10-10", quiet.install = FALSE)
 
 groundhog.library("network", "2021-10-10", quiet.install = FALSE)
@@ -38,13 +37,9 @@ groundhog.library("igraph", "2021-10-10", quiet.install = FALSE)
 
 groundhog.library("kinship2", "2021-10-10", quiet.install = FALSE)
 
-groundhog.library("stringr", "2021-10-10", quiet.install = FALSE)
-
-
 groundhog.library("ggplot2", "2021-10-10", quiet.install = FALSE)
 groundhog.library("reshape2", "2021-10-10", quiet.install = FALSE)
 groundhog.library("viridis", "2021-10-10", quiet.install = FALSE)
-# groundhog.library("unikn", "2021-10-10", quiet.install = FALSE)
 
 groundhog.library("pastecs", "2021-10-10", quiet.install = FALSE)
 groundhog.library("stargazer", "2021-10-10", quiet.install = FALSE)
@@ -63,7 +58,7 @@ options(max.print = 50000000)
 
 
 
-#################################### Load Data: Tenpatti & Alakapuram ####################################
+#################################### LOAD DATA FOR TENPATTI & ALAKAPURAM ####################################
 ## Read in the files that include details of each individual, including age, gender, caste & religion, years of education, household wealth, religious participation, etc.
 village.names <- c("Alakapuram", "Tenpatti")
 individuals <- read.csv("TN_Indiv.csv", header = TRUE, stringsAsFactors = FALSE)
@@ -154,7 +149,7 @@ individuals.TN.13 <- rbind.data.frame(individuals.Ala.13, individuals.Ten.13, st
 
 
 
-#################################### Variable Construction: Gender #################################### 
+#################################### VARIABLE CONSTRUCTION: GENDER #################################### 
 # 0 = Male (n = 336); 1 = Female (n = 446)
 individuals.TN.13$Gender <- ifelse(individuals.TN.13$Gender == "Female", 1, 0)   
 table(individuals.TN.13$Gender)
@@ -162,7 +157,7 @@ table(individuals.TN.13$Gender)
 
 
 
-#################################### Variable Construction: Household Wealth of Each Family (Indian Rupees, INR) ####################################
+#################################### VARIABLE CONSTRUCTION: HOUSEHOLD WEALTH OF EACH FAMILY (Indian Rupees, INR) ####################################
 # Power, E. A. (2017). Social Support Networks and Religiosity in Rural South India. Nature Human Behaviour, 1(3), 0057. https://doi.org/10.1038/s41562-017-0057
 # Similarly to Power (2017) who states in her supplementary information, "the measure of household wealth is based on property holdings,
 # recorded during the household survey. This measure approximates the monetary value (in 1000 Indian rupee units) of all
@@ -177,7 +172,7 @@ families$HouseValue_2013 <- (          ((families$Roof_2013 == "Thatch-roofed")*
                                      + ((families$Roof_2013 == "Tin house")*10000) ## Roof/House Structure Type
                                      + (ifelse(families$Toilet_2013 == "Yes", 1, 0)*4000) ## Latrine
                                      + (ifelse(families$Pipe_2013 == "Yes", 1, 0)*2000) ## Water Supply
-                                     + (ifelse(families$UPSBattery_2013 == 1, 1, 0)*15000) ## Uninterruptible Power Supply
+                                     + (ifelse(ifelse(is.na(families$UPSBattery_2013), 0, families$UPSBattery_2013) == 1, 1, 0)*15000) ## Uninterruptible Power Supply; The expression "ifelse(is.na(families$UPSBattery_2013), 0, families$UPSBattery_2013)" replaces the missing values with zero for the purposes of the overall summation
 )
 
 families$VehicleValue_2013 <- (          ((families$Transport_2013 == "Auto")*200000) ## Auto Rickshaw
@@ -201,14 +196,14 @@ families$VehicleValue_2013 <- (          ((families$Transport_2013 == "Auto")*20
                                        + ((families$Transport_2013 == "White Van\vTractor")*(300000 + 400000)) ## White Van & Large Tractor
 )
 
-families$LandValue_2013 <- (        (families$OwnLandAgri_2013*250000) ## Agricultural Fields (1 acre = 250,000 INR)
-                                  + (families$OwnLandForest_2013*100000) ##  Forest Lands (1 acre = 100,000 INR)
+families$LandValue_2013 <- (        (ifelse(is.na(families$OwnLandAgri_2013), 0, families$OwnLandAgri_2013)*250000) ## Agricultural Fields (1 acre = 250,000 INR); The expression "ifelse(is.na(families$OwnLandAgri_2013), 0, families$OwnLandAgri_2013)" replaces the missing values with zero for the purposes of the overall summation
+                                  + (ifelse(is.na(families$OwnLandForest_2013), 0, families$OwnLandForest_2013)*100000) ##  Forest Lands (1 acre = 100,000 INR); The expression "ifelse(is.na(families$OwnLandForest_2013), 0, families$OwnLandForest_2013)" replaces the missing values with zero for the purposes of the overall summation
                                   + (ifelse(families$PumpSet_2013 == "Yes", 1, 0)*(15000 + 15000)) ## Bore Well (Yes = 15,000 INR) + Pump Set (Yes = 15,000 INR)
 )
 
-families$AnimalValue_2013 <- (        (families$Cow_2013*20000) ## Cows (1 = 20,000 INR)
-                                    + (families$Goat_2013*5000) ## Goats (1 = 5000 INR) 
-                                    + (families$Chicken_2013*500) ## Chickens (1 = 500 INR)
+families$AnimalValue_2013 <- (        (ifelse(is.na(families$Cow_2013), 0, families$Cow_2013)*20000) ## Cows (1 = 20,000 INR); The expression "ifelse(is.na(families$Cow_2013), 0, families$Cow_2013)" replaces the missing values with zero for the purposes of the overall summation
+                                    + (ifelse(is.na(families$Goat_2013), 0, families$Goat_2013)*5000) ## Goats (1 = 5000 INR); The expression "ifelse(is.na(families$Goat_2013), 0, families$Goat_2013)" replaces the missing values with zero for the purposes of the overall summation
+                                    + (ifelse(is.na(families$Chicken_2013), 0, families$Chicken_2013)*500) ## Chickens (1 = 500 INR); The expression "ifelse(is.na(families$Chicken_2013), 0, families$Chicken_2013)" replaces the missing values with zero for the purposes of the overall summation
 )
 
 
@@ -217,7 +212,7 @@ families$AnimalValue_2013 <- (        (families$Cow_2013*20000) ## Cows (1 = 20,
 ## These floors assumes that even the poorest households have: 5 Steel containers; 5 small plastic containers; 2 big plastic containers; 1 dosai pan; 
 ## 3 regular pans; 3 pots; 1 small pot (for milk); 1 idli steamer; 2 ladels; 2 flat serving spoons; 4 lids; 1 bucket; and 1 pourer — all collectively valued as 3500 Indian Rupees
 ## Then, for each person in the household, they are assumed to have: 1 plate; 1 bowl (kinnam); 1 tumbler; 1 tiffin box; and 2 water jugs — all collectively valued at 400 INR per person
-families$BaseValue_2013 <- 3500 + (400*families$FamCountAllRes_2013) ## CountAllRes == Count of all family members (adults plus adolescents) #families$FamCountAllRes_2013; families$FamCountAllRes_2013; families$FamCountAdRes_2013
+families$BaseValue_2013 <- 3500 + (400*ifelse(is.na(families$FamCountAllRes_2013), 0, families$FamCountAllRes_2013)) ## CountAllRes == Count of all family members (adults plus adolescents) #families$FamCountAllRes_2013; families$FamCountAllRes_2013; families$FamCountAdRes_2013
 
 
 ## Sum for Household Wealth
@@ -238,7 +233,7 @@ individuals.TN.13$HouseholdWealth_2013 <- HouseholdWealth_2013.lookup[individual
 
 
 
-#################################### Variable Construction: Reservation Status #################################### 
+#################################### VARIABLE CONSTRUCTION: RESERVATION STATUS #################################### 
 ## See the UN in India for Info on Scheduled Caste and Scheduled Tribes
 ## http://in.one.un.org/task-teams/scheduled-castes-and-scheduled-tribes/
 ## Other Backward Caste and the Creamy Layer: https://en.wikipedia.org/wiki/Creamy_layer
@@ -253,13 +248,13 @@ table(individuals.TN.13$Reservation_Status)
 
 
 
-#################################### Variable Construction: Natal Village/Immigrant Status #################################### 
+#################################### VARIABLE CONSTRUCTION: NATAL VILLAGE/IMMIGRANT STATUS #################################### 
 individuals.TN.13$non.natal.village <- ifelse(individuals.TN.13$NativePlace == individuals.TN.13$Location_2013, 0, 1) # (i.e., natal resident or not),
 
 
 
 
-######################################### Variable Construction: Coefficient of Genetic Relatedness #########################################
+######################################### VARIABLE CONSTRUCTION: COEFFICIENT OF GENETIC RELATEDNESS #########################################
 parents$Sex <- parents$Gender
 parents$Sex[parents$Sex == "M"] <- 1
 parents$Sex[parents$Sex == "F"] <- 2
@@ -308,7 +303,7 @@ relatednessTN.13 <- TN.relatedness[individuals.TN.13$IndivID, individuals.TN.13$
 
 
 
-######################################### Variable Construction: Partnership Status #########################################
+######################################### VARIABLE CONSTRUCTION: PARTNERSHIP STATUS #########################################
 romantic.partnerships$NotDivorced_13 <- ifelse(romantic.partnerships$Status_2013 %in% c("Married", "Widowed"), 1, 0)
 romantic.partnerships$NotDivorced_17 <- ifelse(romantic.partnerships$Status_2017 %in% c("Married", "Widowed"), 1, 0)
 
@@ -343,7 +338,7 @@ individuals.TN.13$Status_2017[individuals.TN.13$Status_2017 == "Widowed"] <- "No
 
 
 
-######################################### Variable Construction: Affinal Relatedness #########################################
+######################################### VARIABLE CONSTRUCTION: COEFFICIENT OF AFFINAL RELATEDNESS #########################################
 ## To construct the matrix for affinal relatedness — i.e., the genetic relatedness between i's and some other person j via i's spouse s,
 ## we rely on the calculation of shortest paths (i.e., the number of "hops" or "steps" between two individuals i and j) in a "network" 
 ## composed of immediate biological kin (i.e., consanguineal relatedness == 0.5) AND their spouses (i.e., those who are NOT divorced/separated).
@@ -459,7 +454,7 @@ table(relatedness.affinalTN.13)
 
 
 
-######################################### Network Construction: 2013 and 2017 Sociometric Questions #########################################
+######################################### NETWORK CONSTRUCTION: 2013 AND 2017 SOCIOMETRIC QUESTIONS #########################################
 ######################################### 2013 Sociometric Questions
 # 1. If you want to talk about important matters, who do you talk with? [ImpIss_2013]
 # 2. If you want daily work [implying daily wage labor] or a new job [implying more permanent employment], who do you approach? [Work_2013]
@@ -521,17 +516,10 @@ networks.of.study <- c("ImpIss_2013", "Work_2013", "Errand_2013",
 
 
 
-######################################### Network Construction: Draw Networks #########################################
+######################################### NETWORK CONSTRUCTION: DRAW NETWORKS #########################################
 TN.Nets <- list()
 
 el.TN.13.17 <- rbind.data.frame(elAla.13.17, elTen.13.17, stringsAsFactors = FALSE)
-
-# el.TN.13.17.porcupines <- subset(el.TN.13.17, el.TN.13.17$Ego %in% individuals.TN.13$IndivID)
-# el.TN.13.17.porcupines <- el.TN.13.17.porcupines[, c("Ego", "Alter",
-#                                                      "ImpIss_2013", "Work_2013", "Errand_2013", "Borrow_2013", "Cash_2013", "Loan_2013", "Talk_2013",
-#                                                      "ImpIss_2017", "Work_2017", "TasksU_2017", "ItemBorrow_2017", "LoanAsk_2017", "TalkU_2017")]
-# length(unique(el.TN.13.17.porcupines$Alter))
-# length(setdiff(unique(el.TN.13.17.porcupines$Alter), individuals.TN.13$IndivID)) ## Over 5,000 porcupines!
 
 for(i in networks.of.study){
 
@@ -563,7 +551,7 @@ for(i in networks.of.study){
 
 
 
-#################################### Network Construction: Composite Social Support Network (2013) #################################### 
+#################################### NETWORK CONSTRUCTION: COMPOSITE SOCIAL SUPPORT NETWORK (2013) #################################### 
 socialsupportTN.13 <- (TN.Nets[["ImpIss_2013"]] # 1. If you want to talk about important matters, who do you talk with? [ImpIss_2013]
                         + TN.Nets[["Work_2013"]] # 2. If you want daily work [implying daily wage labor] or a new job [implying more permanent employment], who do you approach? [Work_2013]
                         + TN.Nets[["Errand_2013"]] # 3. Who will amicably help you with physical tasks [meaning, running errands and other chores]? [Errand_2013]
@@ -577,7 +565,7 @@ socialsupportTN.13[socialsupportTN.13 >= 1] <- 1
 
 
 
-#################################### Network Construction: Composite Social Support Network (2017) #################################### 
+#################################### NETWORK CONSTRUCTION: COMPOSITE SOCIAL SUPPORT NETWORK  (2017) #################################### 
 socialsupportTN.17 <- (TN.Nets[["ImpIss_2017"]] # 11. If you wanted to discuss important and confidential matters, who would you talk to? [ImpIss_2017]
                         + TN.Nets[["Work_2017"]] # 12. If you needed more or new wage work or a salaried job, who could you ask for help finding it? [Work_2017]
                         + TN.Nets[["TasksU_2017"]] # 16. Union of ["TasksF_2017"] and ["TasksM_2017"]; See above.
@@ -591,12 +579,12 @@ socialsupportTN.17[socialsupportTN.17 >= 1] <- 1
 print(table(socialsupportTN.13, socialsupportTN.17))
 
 
-#################################### Network Construction: Friendship #################################### 
+#################################### NETWORK CONSTRUCTION: FRIENDSHIP (2013) #################################### 
 friendshipTN.13 <- TN.Nets[["Close_2013"]] # 11. Who are your very close friends or relatives? [Close_2013]
 
 
 
-######################################### Variable Construction: Inter-household Geographic Distance (Meters) #########################################
+######################################### VARIABLE CONSTRUCTION: INTER-HOUSEHOLD GEOGRAPHIC DISTANCE (Meters) #########################################
 interhousehold.dist.TN.13 <- matrix(data = 0, nrow = length(individuals.TN.13$IndivID), ncol = length(individuals.TN.13$IndivID))
 rownames(interhousehold.dist.TN.13) <- as.character(individuals.TN.13$GPS_2013) ### N.B. This creates an appropriate matrix for the dyadic covariate only when all adjacency matrices are in the same order as individuals.Ala.13
 colnames(interhousehold.dist.TN.13) <- as.character(individuals.TN.13$GPS_2013)
@@ -615,6 +603,26 @@ rownames(interhousehold.dist.TN.13) <- as.character(individuals.TN.13$IndivID)
 colnames(interhousehold.dist.TN.13) <- as.character(individuals.TN.13$IndivID)
 
 print(table(interhousehold.dist.TN.13 == t(interhousehold.dist.TN.13))) ## Sanity Check
+
+
+
+
+
+################################# VARIABLE CONSTRUCTION: VILLAGE CORESIDENCE #################################
+coresidence <- data.frame()
+for(i in 1:nrow(individuals.TN.13)){
+  village <- individuals.TN.13$Location_2013[i] ## In which village does i live?
+  village.match <- individuals.TN.13$Location_2013 == village ## Match i's village against the vector of all residents' locations across both villages
+  village.match <- as.numeric(village.match) ## Convert the TRUE/FALSE vectors into zeros (FALSE) and ones (TRUE)
+  
+  coresidence <- rbind(coresidence, village.match) 
+  #print(village.match)
+  rm(i, village, village.match)
+}
+coresidence <- as.matrix(coresidence)
+colnames(coresidence) <- individuals.TN.13$IndivID
+rownames(coresidence) <- individuals.TN.13$IndivID
+diag(coresidence) <- 0 
 
 
 

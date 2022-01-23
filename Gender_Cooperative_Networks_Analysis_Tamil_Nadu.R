@@ -29,7 +29,6 @@ library(groundhog)
 ## Finally, note that groundhog may prompt you to restart R immediately after loading packages due to version clashes and then reload the packages with groundhog again.
 ## This is a bit annoying, but please be sure to follow the groundhog prompts.
 
-groundhog.library("tidyverse", "2021-10-10", quiet.install = FALSE) ## You may also need to install GFortran which is used to install the Matrix package
 groundhog.library("purrr", "2021-10-10", quiet.install = FALSE)
 
 groundhog.library("network", "2021-10-10", quiet.install = FALSE)
@@ -38,13 +37,9 @@ groundhog.library("igraph", "2021-10-10", quiet.install = FALSE)
 
 groundhog.library("kinship2", "2021-10-10", quiet.install = FALSE)
 
-groundhog.library("stringr", "2021-10-10", quiet.install = FALSE)
-
-
 groundhog.library("ggplot2", "2021-10-10", quiet.install = FALSE)
 groundhog.library("reshape2", "2021-10-10", quiet.install = FALSE)
 groundhog.library("viridis", "2021-10-10", quiet.install = FALSE)
-# groundhog.library("unikn", "2021-10-10", quiet.install = FALSE)
 
 groundhog.library("pastecs", "2021-10-10", quiet.install = FALSE)
 groundhog.library("stargazer", "2021-10-10", quiet.install = FALSE)
@@ -78,121 +73,8 @@ source("Gender_Cooperative_Networks_DataPrep_Tamil_Nadu.R")
 
 
 
-################################# Variable Construction: Village Coresidence #################################
-coresidence <- data.frame()
-for(i in 1:nrow(individuals.TN.13)){
-  village <- individuals.TN.13$Location_2013[i] ## In which village does i live?
-  village.match <- individuals.TN.13$Location_2013 == village ## Match i's village against the vector of all residents locations across both villages
-  village.match <- as.numeric(village.match) ## Convert the TRUE/FALSE vectors into zeros (FALSE) and ones (TRUE)
-  
-  coresidence <- rbind(coresidence, village.match) 
-  #print(village.match)
-  rm(i, village, village.match)
-}
-coresidence <- as.matrix(coresidence)
-colnames(coresidence) <- individuals.TN.13$IndivID
-rownames(coresidence) <- individuals.TN.13$IndivID
-diag(coresidence) <- 0 ## Zeroing-out the diagonal ensures that the 108 individual residents (i.e., the diagonal cells) are excluded from Figure 3
-
-
-
-################################# NETWORK DESCRIPTIVE STATISTICS (By Wave) #################################
-network.snapshots <- list(
-  socialsupportTN.13 = socialsupportTN.13,
-  socialsupportTN.17 = socialsupportTN.17
-)
-
-lapply(network.snapshots, sum) ## Number of composite relationships
-lapply(network.snapshots, function(x){sum(x*coresidence)}) ## Number of of intra-village composite relationships
-lapply(network.snapshots, function(x){sum(x)-sum(x*coresidence)}) ## Number of of inter-village composite relationships
-
-
-gden(network.snapshots, mode = "digraph") ## Network Density
-
-
-grecip(network.snapshots, measure = "edgewise") ## Tie Reciprocity (i.e., proportion of edges/arcs which are reciprocated)
-gtrans(dat = network.snapshots, mode = "digraph", measure = "weak", use.adjacency	= FALSE) ## Graph-Level Transitivity
-
-
-sna::dyad.census(network.snapshots) 
-sna::triad.census(network.snapshots)
-
-
-quantile(sna::degree(network.snapshots[["socialsupportTN.13"]], gmode = "digraph", cmode = "outdegree"), probs = seq(0,1,0.05))
-quantile(sna::degree(network.snapshots[["socialsupportTN.17"]], gmode = "digraph", cmode = "outdegree"), probs = seq(0,1,0.05))
-
-quantile(sna::degree(network.snapshots[["socialsupportTN.13"]], gmode = "digraph", cmode = "indegree"), probs = seq(0,1,0.05))
-quantile(sna::degree(network.snapshots[["socialsupportTN.17"]], gmode = "digraph", cmode = "indegree"), probs = seq(0,1,0.05))
-
-
-table(sna::degree(network.snapshots[["socialsupportTN.13"]], gmode = "digraph", cmode = "outdegree"))
-table(sna::degree(network.snapshots[["socialsupportTN.17"]], gmode = "digraph", cmode = "outdegree"))
-
-
-table(sna::degree(network.snapshots[["socialsupportTN.13"]], gmode = "digraph", cmode = "indegree"))
-table(sna::degree(network.snapshots[["socialsupportTN.17"]], gmode = "digraph", cmode = "indegree"))
-
-
-stat.desc(sna::degree(network.snapshots[["socialsupportTN.13"]], gmode = "digraph", cmode = "outdegree"))
-stat.desc(sna::degree(network.snapshots[["socialsupportTN.17"]], gmode = "digraph", cmode = "outdegree"))
-
-
-stat.desc(sna::degree(network.snapshots[["socialsupportTN.13"]], gmode = "digraph", cmode = "indegree"))
-stat.desc(sna::degree(network.snapshots[["socialsupportTN.17"]], gmode = "digraph", cmode = "indegree"))
-
-
-table(sna::geodist(network.snapshots[["socialsupportTN.13"]])$gdist)
-table(sna::geodist(network.snapshots[["socialsupportTN.17"]])$gdist)
-
-
-# ggplot(data = melt(socialsupportTN.13), aes(x = Var1, y = Var2, fill = value)) + geom_tile() + theme(axis.text = element_blank()) + scale_fill_viridis(option = "plasma", direction = 1) 
-# ggplot(data = melt(socialsupportTN.17), aes(x = Var1, y = Var2, fill = value)) + geom_tile() + theme(axis.text = element_blank()) + scale_fill_viridis(option = "plasma", direction = 1) 
-# ggplot(data = melt(friendshipTN.13), aes(x = Var1, y = Var2, fill = value)) + geom_tile() + theme(axis.text = element_blank()) + scale_fill_viridis(option = "plasma", direction = 1) 
-# ggplot(data = melt(relatednessTN.13), aes(x = Var1, y = Var2, fill = value)) + geom_tile() + theme(axis.text = element_blank()) + scale_fill_viridis(option = "plasma", direction = 1) 
-# ggplot(data = melt(relatedness.affinalTN.13), aes(x = Var1, y = Var2, fill = value)) + geom_tile() + theme(axis.text = element_blank()) + scale_fill_viridis(option = "plasma", direction = 1) 
-# ggplot(data = melt(interhousehold.dist.TN.13), aes(x = Var1, y = Var2, fill = value)) + geom_tile() + theme(axis.text = element_blank()) + scale_fill_viridis(option = "plasma", direction = 1) 
-# ggplot(data = melt(interhousehold.dist.TN.13*(coresidence == 0)), aes(x = Var1, y = Var2, fill = value)) + geom_tile() + theme(axis.text = element_blank()) + scale_fill_viridis(option = "plasma", direction = 1) 
-# ggplot(data = melt(coresidence), aes(x = Var1, y = Var2, fill = value)) + geom_tile() + theme(axis.text = element_blank()) + scale_fill_viridis(option = "plasma", direction = 1) 
-
-
-
-################################# MONADIC/DYADIC DESCRIPTIVE STATISTICS: 2013 #################################
-## Monadic Covariates
-table(individuals.TN.13$Gender) ## 1 == Female; Male == 0
-table(individuals.TN.13$Reservation_Status)  ## 1 = Scheduled Caste; 0 = Backward Caste
-table(individuals.TN.13$Caste, individuals.TN.13$Location_2013, useNA = "always") 
-table(individuals.TN.13$non.natal.village)  ## 1 = Village Immigrant/Non-Natal Village; 0 = Village Native/Natal Village
-table(ifelse(individuals.TN.13$Status_2013 == "Not Married", 1, 0)) ## 1 == Not Married; 0 == Married
-table(ifelse(individuals.TN.13$Location_2013 == "Tenpatti", 1, 0)) ## 1 == Tenpatti; 0 == Alakapuram
-
-
-stargazer( data.frame( Age = 2013-individuals.TN.13$BirthYear,
-                       `Years of Education` = individuals.TN.13$EduYears_2013,
-                       `Household Wealth` = individuals.TN.13$HouseholdWealth_2013,
-                       `General Reputation` = colSums(TN.Nets[["Generous_2013"]] + 
-                                                          TN.Nets[["Influence_2013"]] + 
-                                                          TN.Nets[["Character_2013"]] + 
-                                                          TN.Nets[["Strength_2013"]]
-                                                      )
-                       ), 
-           summary = T, summary.logical = T, digits = 2,
-           summary.stat = c("n", "mean", "sd", "median", "min", "max"),
-           type = "text")
-
-
-## Dyadic Covariates 
-stat.desc(relatednessTN.13[upper.tri(relatednessTN.13, diag = F)]) ## Consanguineal Relatedness; symmetric dyadic covariate
-stat.desc(relatedness.affinalTN.13[upper.tri(relatedness.affinalTN.13, diag = F)]) ## Affinal Relatedness; symmetric dyadic covariate
-
-stat.desc(interhousehold.dist.TN.13[upper.tri(interhousehold.dist.TN.13, diag = F)]) ## Geographic (Inter-household) Distance; symmetric dyadic covariate
-
-table(friendshipTN.13)  ## Friendship/Perceived Social Closeness; asymmetric dyadic covariate
-
-
-
-
 ######################################################################## STOCHASTIC ACTOR-ORIENTED MODELS (SAOMs) ########################################################################
-############################################## FUNCTION FOR THE ITERATIVE RUNNING OF siena07() ############################################## 
+############################################## DEFINE FUNCTION FOR THE ITERATIVE RUNNING OF siena07() ############################################## 
 ### The following function will repeatedly execute siena07() until a SAOM has converged in line with the convergence criteria below.
 ### Here, prevAns (i.e., an earlier existing "on track" estimation result) is repeatedly used to determine the initial values for estimation at each successive iteration of the algorithm.
 ### Because each run of siena07() can take many hours, each iteration is saved as an .RData file so no progress is lost.
@@ -240,7 +122,7 @@ siena07RunToConvergence <- function(alg, dat, eff, ans0, modelName, ...){
 
 
 
-################################ Define SIENA Objects for SAOM Estimation #################################
+################################ DEFINE SIENA OBJECTS FOR SAOM ESTIMATION #################################
 
 villagers <- rownames(socialsupportTN.13)
 villagers.size <- length(villagers)
@@ -429,7 +311,7 @@ print01Report(villages.TN.sienaData, modelname = "Gender_Cooperation_Tamil_Nadu_
 
 
 
-############################################# Define SIENA Algorithm ############################################# 
+############################################# DEFINE SIENA ALGORITHM ############################################# 
 modelparams <- sienaAlgorithmCreate(projname = "Gender_Cooperation_Tamil_Nadu_2021_Estimation_History" 
                                     
                                     # Boolean. Only relevant for Method of Moments simulation/estimation. 
@@ -452,7 +334,7 @@ modelparams <- sienaAlgorithmCreate(projname = "Gender_Cooperation_Tamil_Nadu_20
                                     # use a smaller value (but greater than 0). The default value is 0.2. Sometimes
                                     # for difficult data-model combinations, the algorithm diverges very quickly, and this
                                     # may be countered by smaller values of firstg, e.g., 0.01 or 0.05.
-                                    , firstg = 0.1
+                                    , firstg = 0.2
                                     
                                     # Number between 0 and 1 (bounds included), values outside this interval will be truncated; 
                                     # for diagonalize = 0 the complete estimated derivative matrix will be used for updates in the Robbins-Monro procedure; 
@@ -485,6 +367,8 @@ fit.1.modeffects <- includeEffects(fit.1.modeffects, sameX, name = "support_net"
 fit.1.modeffects <- includeEffects(fit.1.modeffects, simX, name = "support_net", interaction1 = "age", type = "eval", fix = FALSE, verbose = FALSE) 
 
 fit.1.modeffects <- includeEffects(fit.1.modeffects, simX, name = "support_net", interaction1 = "education", type = "eval", fix = FALSE, verbose = FALSE) 
+
+fit.1.modeffects <- includeEffects(fit.1.modeffects, simX, name = "support_net", interaction1 = "HH_wealth", type = "eval", fix = FALSE, verbose = FALSE) 
 
 fit.1.modeffects <- includeEffects(fit.1.modeffects, sameX, name = "support_net", interaction1 = "caste", type = "eval", fix = FALSE, verbose = FALSE) 
 
@@ -524,6 +408,8 @@ fit.2.modeffects <- includeInteraction(fit.2.modeffects, egoX, sameX, interactio
 fit.2.modeffects <- includeInteraction(fit.2.modeffects, egoX, simX, interaction1 = c("gender", "age"), name = "support_net", type = "eval", fix = FALSE, verbose = FALSE)
 
 fit.2.modeffects <- includeInteraction(fit.2.modeffects, egoX, simX, interaction1 = c("gender", "education"), name = "support_net", type = "eval", fix = FALSE, verbose = FALSE)
+
+fit.2.modeffects <- includeInteraction(fit.2.modeffects, egoX, simX, interaction1 = c("gender", "HH_wealth"), name = "support_net", type = "eval", fix = FALSE, verbose = FALSE)
 
 fit.2.modeffects <- includeInteraction(fit.2.modeffects, egoX, sameX, interaction1 = c("gender", "caste"), name = "support_net", type = "eval", fix = FALSE, verbose = FALSE)
 
@@ -566,16 +452,6 @@ fit.3.ans <- siena07RunToConvergence(alg = modelparams, dat = villages.TN.sienaD
 
 
 
-################################# TABLE 1 (PART 2): MULTI-PARAMETER WALD TESTS #################################
-## RUN: ?Multipar.RSiena
-fit.2.ans.Walt.test <- Multipar.RSiena(ans = fit.2.ans, c(13, 21:38)) ## Positive integers specify the tested effects (as numbered in "print(ans)" )
-print(fit.2.ans.Walt.test)
-
-fit.3.ans.Walt.test <- Multipar.RSiena(ans = fit.3.ans, c(15:16, 18, 20, 21, 23:25))
-print(fit.3.ans.Walt.test)
-
-
-
 
 ################################# COMBINE All SAOM FIT OBJECTS FOR POST-PROCESSING ################################# 
 villages.TN.sienaFits <- list(fit.1.ans, fit.2.ans, fit.3.ans)
@@ -586,7 +462,7 @@ closeAllConnections()
 
 
 
-################################# DISTRIBUTIONAL GOODNESS OF FIT ASSESSMENT ################################# 
+################################# COMMENCE DISTRIBUTIONAL GOODNESS OF FIT ASSESSMENT ################################# 
 cl <- makeCluster(cores)
 
 ## The following lines ensures that sienaGOF/GeodesicDistribution can access the "network" package and the "sna" package via groundhog on each CPU core
@@ -696,7 +572,7 @@ RSiena:::plot.sienaGOF(villages.TN.sienaGOFs.attribute.triadcensus[[3]], center 
 
   
 
-################################# TABLE 1 (PART 1): PARAMETER ESTIMATES #################################
+################################# TABLE 1: PARAMETER ESTIMATES #################################
 all.pretty.effects.of.interest <- c( ## Arranged based on the RSiena internal ordering of effects as they appear in the estimated SAOMs
   "Rate (Avg. Tie Changes)  m_1 (2013) → m_2 (2017)",
   "Out-degree",
@@ -861,7 +737,17 @@ write.table(siena.coefs[, c("beta_hat_M1", "se_beta_M1", "p_value_M1",
 
 
 
-################################# TABLE 2: Goodness-of-Fit #################################
+
+################################# SI TABLE 1 (PART 1): MULTI-PARAMETER WALD TESTS #################################
+## RUN: ?Multipar.RSiena
+fit.2.ans.Walt.test <- Multipar.RSiena(ans = fit.2.ans, c(13, 21:38)) ## Positive integers specify the tested effects (as numbered in "print(ans)" )
+print(fit.2.ans.Walt.test)
+
+fit.3.ans.Walt.test <- Multipar.RSiena(ans = fit.3.ans, c(15:16, 18, 20, 21, 23:25))
+print(fit.3.ans.Walt.test)
+
+
+################################# SI TABLE 1 (PART 2): DISTRIBUTIONAL GOODNESS-OF-FIT #################################
 ## Extract information from the sienaGOF objects and combine in one data frame
 siena.GOFs <- rbind.data.frame(
   do.call(cbind, lapply(X = villages.TN.sienaGOFs.attribute.indegree,
@@ -895,6 +781,102 @@ write.table(siena.GOFs[,c("Model_1.MHD", "Model_1.p_value",
                           "Model_2.MHD", "Model_2.p_value",
                           "Model_3.MHD", "Model_3.p_value")],
             file = "T2_ModelGOFs.txt", sep = "\t", quote = FALSE, row.names = TRUE) ## Main Models
+
+
+
+################################# SI TABLE 3 + SI TABLE 4: NETWORK DESCRIPTIVE STATISTICS (By Wave) #################################
+network.snapshots <- list(
+  socialsupportTN.13 = socialsupportTN.13,
+  socialsupportTN.17 = socialsupportTN.17
+)
+
+lapply(network.snapshots, sum) ## Number of composite relationships
+lapply(network.snapshots, function(x){sum(x*coresidence)}) ## Number of of intra-village composite relationships
+lapply(network.snapshots, function(x){sum(x)-sum(x*coresidence)}) ## Number of of inter-village composite relationships
+
+
+gden(network.snapshots, mode = "digraph") ## Network Density
+
+
+grecip(network.snapshots, measure = "edgewise") ## Tie Reciprocity (i.e., proportion of edges/arcs which are reciprocated)
+gtrans(dat = network.snapshots, mode = "digraph", measure = "weak", use.adjacency	= FALSE) ## Graph-Level Transitivity
+
+
+sna::dyad.census(network.snapshots) 
+sna::triad.census(network.snapshots)
+
+
+quantile(sna::degree(network.snapshots[["socialsupportTN.13"]], gmode = "digraph", cmode = "outdegree"), probs = seq(0,1,0.05))
+quantile(sna::degree(network.snapshots[["socialsupportTN.17"]], gmode = "digraph", cmode = "outdegree"), probs = seq(0,1,0.05))
+
+quantile(sna::degree(network.snapshots[["socialsupportTN.13"]], gmode = "digraph", cmode = "indegree"), probs = seq(0,1,0.05))
+quantile(sna::degree(network.snapshots[["socialsupportTN.17"]], gmode = "digraph", cmode = "indegree"), probs = seq(0,1,0.05))
+
+
+table(sna::degree(network.snapshots[["socialsupportTN.13"]], gmode = "digraph", cmode = "outdegree"))
+table(sna::degree(network.snapshots[["socialsupportTN.17"]], gmode = "digraph", cmode = "outdegree"))
+
+
+table(sna::degree(network.snapshots[["socialsupportTN.13"]], gmode = "digraph", cmode = "indegree"))
+table(sna::degree(network.snapshots[["socialsupportTN.17"]], gmode = "digraph", cmode = "indegree"))
+
+
+stat.desc(sna::degree(network.snapshots[["socialsupportTN.13"]], gmode = "digraph", cmode = "outdegree"))
+stat.desc(sna::degree(network.snapshots[["socialsupportTN.17"]], gmode = "digraph", cmode = "outdegree"))
+
+
+stat.desc(sna::degree(network.snapshots[["socialsupportTN.13"]], gmode = "digraph", cmode = "indegree"))
+stat.desc(sna::degree(network.snapshots[["socialsupportTN.17"]], gmode = "digraph", cmode = "indegree"))
+
+
+table(sna::geodist(network.snapshots[["socialsupportTN.13"]])$gdist)
+table(sna::geodist(network.snapshots[["socialsupportTN.17"]])$gdist)
+
+
+# ggplot(data = melt(socialsupportTN.13), aes(x = Var1, y = Var2, fill = value)) + geom_tile() + theme(axis.text = element_blank()) + scale_fill_viridis(option = "plasma", direction = 1) 
+# ggplot(data = melt(socialsupportTN.17), aes(x = Var1, y = Var2, fill = value)) + geom_tile() + theme(axis.text = element_blank()) + scale_fill_viridis(option = "plasma", direction = 1) 
+# ggplot(data = melt(friendshipTN.13), aes(x = Var1, y = Var2, fill = value)) + geom_tile() + theme(axis.text = element_blank()) + scale_fill_viridis(option = "plasma", direction = 1) 
+# ggplot(data = melt(relatednessTN.13), aes(x = Var1, y = Var2, fill = value)) + geom_tile() + theme(axis.text = element_blank()) + scale_fill_viridis(option = "plasma", direction = 1) 
+# ggplot(data = melt(relatedness.affinalTN.13), aes(x = Var1, y = Var2, fill = value)) + geom_tile() + theme(axis.text = element_blank()) + scale_fill_viridis(option = "plasma", direction = 1) 
+# ggplot(data = melt(interhousehold.dist.TN.13), aes(x = Var1, y = Var2, fill = value)) + geom_tile() + theme(axis.text = element_blank()) + scale_fill_viridis(option = "plasma", direction = 1) 
+# ggplot(data = melt(interhousehold.dist.TN.13*(coresidence == 0)), aes(x = Var1, y = Var2, fill = value)) + geom_tile() + theme(axis.text = element_blank()) + scale_fill_viridis(option = "plasma", direction = 1) 
+# ggplot(data = melt(coresidence), aes(x = Var1, y = Var2, fill = value)) + geom_tile() + theme(axis.text = element_blank()) + scale_fill_viridis(option = "plasma", direction = 1) 
+
+
+
+################################# SI TABLE 5 + SI TABLE 6: MONADIC/DYADIC DESCRIPTIVE STATISTICS (2013) #################################
+## Monadic Covariates
+table(individuals.TN.13$Gender, useNA = "always") ## 1 == Female; Male == 0
+table(individuals.TN.13$Reservation_Status, useNA = "always")  ## 1 = Scheduled Caste; 0 = Backward Caste
+table(individuals.TN.13$Caste, individuals.TN.13$Location_2013, useNA = "always") 
+table(individuals.TN.13$non.natal.village, useNA = "always")  ## 1 = Village Immigrant/Non-Natal Village; 0 = Village Native/Natal Village
+table(ifelse(individuals.TN.13$Status_2013 == "Not Married", 1, 0), useNA = "always") ## 1 == Not Married; 0 == Married
+table(ifelse(individuals.TN.13$Location_2013 == "Tenpatti", 1, 0), useNA = "always") ## 1 == Tenpatti; 0 == Alakapuram
+
+
+stargazer( data.frame( Age = 2013-individuals.TN.13$BirthYear,
+                       `Years of Education` = individuals.TN.13$EduYears_2013,
+                       `Household Wealth` = individuals.TN.13$HouseholdWealth_2013,
+                       `General Reputation` = colSums(TN.Nets[["Generous_2013"]] + 
+                                                        TN.Nets[["Influence_2013"]] + 
+                                                        TN.Nets[["Character_2013"]] + 
+                                                        TN.Nets[["Strength_2013"]]
+                       )
+), 
+summary = T, summary.logical = T, digits = 2,
+summary.stat = c("n", "mean", "sd", "median", "min", "max"),
+type = "text")
+
+
+## Dyadic Covariates 
+stat.desc(relatednessTN.13[upper.tri(relatednessTN.13, diag = F)]) ## Consanguineal Relatedness; symmetric dyadic covariate
+stat.desc(relatedness.affinalTN.13[upper.tri(relatedness.affinalTN.13, diag = F)]) ## Affinal Relatedness; symmetric dyadic covariate
+
+stat.desc(interhousehold.dist.TN.13[upper.tri(interhousehold.dist.TN.13, diag = F)]) ## Geographic (Inter-household) Distance; symmetric dyadic covariate
+
+table(friendshipTN.13, useNA = "always")  ## Friendship/Perceived Social Closeness; asymmetric dyadic covariate
+
+
 
 
 
