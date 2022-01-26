@@ -95,8 +95,8 @@ siena07RunToConvergence <- function(alg, dat, eff, ans0, modelName, ...){
       return("WARNING: Extreme Divergence. Terminating run")
     }
     ## These are the convergence criteria used for the study. Convergence is excellent when the overall maximum convergence ratio (tconv.max) 
-    ## is less than 0.10, and, for all the individual parameters, the t-ratios for convergence are all (tratio.max) less than 0.1 in absolute value
-    else if (tconv.max < 0.10 & tratio.max < 0.10) {
+    ## is less than 0.12, and, for all the individual parameters, the t-ratios for convergence are all (tratio.max) less than 0.10 in absolute value
+    else if (tconv.max < 0.12 & tratio.max < 0.10) {
       print(ans)
       cat(paste0("Maximum Absolute Value Amongst Convergence t-Ratios: ", tratio.max, "\n"))
       cat(paste0("Model Has Converged After ", numr, " iterations. \n"))
@@ -434,7 +434,7 @@ fit.2.ans <- siena07RunToConvergence(alg = modelparams, dat = villages.TN.sienaD
 
 
 
-## Model 3: Social Constraints Adjusted Model (Typically Converges After Six Iterations of siena07RunToConvergence)
+## Model 3: Social Constraints Adjusted Model (Typically Converges After Four Iterations of siena07RunToConvergence)
 fit.3.modeffects <- includeEffects(fit.2.modeffects, egoX, name = "support_net", interaction1 = "age", type = "eval", fix = FALSE, verbose = FALSE) 
 fit.3.modeffects <- includeEffects(fit.3.modeffects, egoSqX, name = "support_net", interaction1 = "age", type = "eval", fix = FALSE, verbose = FALSE) 
 fit.3.modeffects <- includeEffects(fit.3.modeffects, egoX, name = "support_net", interaction1 = "education", type = "eval", fix = FALSE, verbose = FALSE) 
