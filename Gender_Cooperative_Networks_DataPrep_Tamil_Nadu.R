@@ -3,7 +3,7 @@
  
 
 
-## To help ensure the reproducibility of findings from this project, I have decided to use the R package "groundhog"
+
 library(groundhog)
 
 
