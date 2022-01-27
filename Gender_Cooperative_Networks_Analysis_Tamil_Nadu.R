@@ -30,6 +30,7 @@ library(groundhog)
 ## This is a bit annoying, but please be sure to follow the groundhog prompts.
 
 groundhog.library("purrr", "2021-10-10", quiet.install = FALSE)
+groundhog.library("dplyr", "2021-10-10", quiet.install = FALSE) 
 
 groundhog.library("network", "2021-10-10", quiet.install = FALSE)
 groundhog.library("sna", "2021-10-10", quiet.install = FALSE)
@@ -570,7 +571,7 @@ RSiena:::plot.sienaGOF(villages.TN.sienaGOFs.attribute.triadcensus[[1]], center 
 RSiena:::plot.sienaGOF(villages.TN.sienaGOFs.attribute.triadcensus[[2]], center = TRUE, scale = TRUE, violin = FALSE)
 RSiena:::plot.sienaGOF(villages.TN.sienaGOFs.attribute.triadcensus[[3]], center = TRUE, scale = TRUE, violin = FALSE)
 
-  
+
 
 ################################# TABLE 1: PARAMETER ESTIMATES #################################
 all.pretty.effects.of.interest <- c( ## Arranged based on the RSiena internal ordering of effects as they appear in the estimated SAOMs
@@ -595,6 +596,7 @@ all.pretty.effects.of.interest <- c( ## Arranged based on the RSiena internal or
   "Years of Education (Ego)",
   "Years of Education Similarity",
   "Household Wealth (Ego)",
+  "Household Wealth Similarity",
   "Reservation Status: Scheduled Caste (Ego)",
   "Same Caste",
   "Immigrant Status: Non-Natal Village Resident (Ego)",
@@ -611,6 +613,7 @@ all.pretty.effects.of.interest <- c( ## Arranged based on the RSiena internal or
   "Gender: Woman (Ego) x Same Gender",
   "Gender: Woman (Ego) x Age Similarity",
   "Gender: Woman (Ego) x Years of Education Similarity",
+  "Gender: Woman (Ego) x Household Wealth Similarity",
   "Gender: Woman (Ego) x Same Caste",
   "Gender: Woman (Ego) x General Reputation Similarity",
   "Gender: Woman (Ego) x Same Household",
@@ -641,6 +644,7 @@ reorder.all.pretty.effects.of.interest <- c( ## Arranged in the preferred order 
   "Same Gender",
   "Age Similarity",
   "Years of Education Similarity",
+  "Household Wealth Similarity",
   "Same Caste",
   "General Reputation Similarity",
   
@@ -665,6 +669,7 @@ reorder.all.pretty.effects.of.interest <- c( ## Arranged in the preferred order 
   "Gender: Woman (Ego) x Same Gender",
   "Gender: Woman (Ego) x Age Similarity",
   "Gender: Woman (Ego) x Years of Education Similarity",
+  "Gender: Woman (Ego) x Household Wealth Similarity",
   "Gender: Woman (Ego) x Same Caste",
   "Gender: Woman (Ego) x General Reputation Similarity",
   
@@ -733,17 +738,17 @@ print(siena.coefs) ## See how it all looks.
 write.table(siena.coefs[, c("beta_hat_M1", "se_beta_M1", "p_value_M1",
                             "beta_hat_M2", "se_beta_M2", "p_value_M2",
                             "beta_hat_M3", "se_beta_M3", "p_value_M3")],
-            file = "T1_PT1_ModelEstimates.txt", sep = "\t", quote = FALSE, row.names = TRUE) ## Main Models
+            file = "T1_ModelEstimates.txt", sep = "\t", quote = FALSE, row.names = TRUE) ## Main Models
 
 
 
 
 ################################# SI TABLE 1 (PART 1): MULTI-PARAMETER WALD TESTS #################################
 ## RUN: ?Multipar.RSiena
-fit.2.ans.Walt.test <- Multipar.RSiena(ans = fit.2.ans, c(13, 21:38)) ## Positive integers specify the tested effects (as numbered in "print(ans)" )
+fit.2.ans.Walt.test <- Multipar.RSiena(ans = fit.2.ans, c(13, 22:40)) ## Positive integers specify the tested effects (as numbered in "print(ans)" )
 print(fit.2.ans.Walt.test)
 
-fit.3.ans.Walt.test <- Multipar.RSiena(ans = fit.3.ans, c(15:16, 18, 20, 21, 23:25))
+fit.3.ans.Walt.test <- Multipar.RSiena(ans = fit.3.ans, c(15:16, 18, 20, 22, 24:26))
 print(fit.3.ans.Walt.test)
 
 

@@ -30,6 +30,7 @@ library(groundhog)
 ## This is a bit annoying, but please be sure to follow the groundhog prompts.
 
 groundhog.library("purrr", "2021-10-10", quiet.install = FALSE)
+groundhog.library("dplyr", "2021-10-10", quiet.install = FALSE) 
 
 groundhog.library("network", "2021-10-10", quiet.install = FALSE)
 groundhog.library("sna", "2021-10-10", quiet.install = FALSE)
