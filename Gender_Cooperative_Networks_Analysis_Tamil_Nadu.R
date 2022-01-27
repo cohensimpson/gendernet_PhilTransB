@@ -69,7 +69,7 @@ cores <- 10
 
 
 
-####################################  LOAD NETWORK AND ATTRIBUTE DATA FOR ALAKAPURAM AND TENPATTI  ####################################  
+#################################### LOAD NETWORK AND ATTRIBUTE DATA FOR ALAKAPURAM AND TENPATTI ####################################  
 source("Gender_Cooperative_Networks_DataPrep_Tamil_Nadu.R")
 
 
