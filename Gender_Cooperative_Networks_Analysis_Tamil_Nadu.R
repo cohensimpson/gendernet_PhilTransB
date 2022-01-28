@@ -856,6 +856,7 @@ table(individuals.TN.13$Reservation_Status, useNA = "always")  ## 1 = Scheduled 
 table(individuals.TN.13$Caste, individuals.TN.13$Location_2013, useNA = "always") 
 table(individuals.TN.13$non.natal.village, useNA = "always")  ## 1 = Village Immigrant/Non-Natal Village; 0 = Village Native/Natal Village
 table(ifelse(individuals.TN.13$Status_2013 == "Not Married", 1, 0), useNA = "always") ## 1 == Not Married; 0 == Married
+length(table(individuals.TN.13$GPS_2013)) ## How many households?
 table(ifelse(individuals.TN.13$Location_2013 == "Tenpatti", 1, 0), useNA = "always") ## 1 == Tenpatti; 0 == Alakapuram
 
 
