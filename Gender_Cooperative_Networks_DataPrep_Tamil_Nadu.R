@@ -65,7 +65,7 @@ village.names <- c("Alakapuram", "Tenpatti")
 individuals <- read.csv("TN_Indiv.csv", header = TRUE, stringsAsFactors = FALSE)
 families <- read.csv("TN_Fam.csv", header = TRUE, stringsAsFactors = FALSE)
 parents <- read.csv("TN_Kinship.csv", header = TRUE, stringsAsFactors = FALSE)
-romantic.partnerships <- read.csv("TN_partnerships.csv", header = TRUE, stringsAsFactors = FALSE)
+marital.partnerships <- read.csv("TN_partnerships.csv", header = TRUE, stringsAsFactors = FALSE)
 interhousehold.distance <- read.csv("TN_Dist.csv", header = TRUE, stringsAsFactors = FALSE)
 
 elAla.13.17 <- read.csv("Ala_1317.csv", header = TRUE, stringsAsFactors = FALSE)
@@ -120,7 +120,7 @@ table(individuals$DidSurvey13,individuals$DidSurvey17)
 # we model network change from 2013 and to 2017, where individuals new to Alakapuram and Tenpatti in 2017 are excluded.
 
 ## N.B.,Female Resident TN17103 appears in the 2013 Alakapuram edgelist AND the 2013 and 2017 Tenpatti edgelists
-## In line with TN_Indiv.csv, TN17103 lived in Tenpatti during the two survey waves (although Alakapuram is his/her natal village) 
+## In line with TN_Indiv.csv, TN17103 lived in Tenpatti during the two survey waves (although Alakapuram is her natal village) 
 ## Accordingly, remove her from the Alakapuram edgelist
 individuals.Ala.13 <- subset(individuals, individuals$IndivID %in% unique(elAla.13$Ego)) 
 individuals.Ten.13 <- subset(individuals, individuals$IndivID %in% unique(elTen.13$Ego))
@@ -305,23 +305,23 @@ relatednessTN.13 <- TN.relatedness[individuals.TN.13$IndivID, individuals.TN.13$
 
 
 ######################################### VARIABLE CONSTRUCTION: PARTNERSHIP STATUS #########################################
-romantic.partnerships$NotDivorced_13 <- ifelse(romantic.partnerships$Status_2013 %in% c("Married", "Widowed"), 1, 0)
-romantic.partnerships$NotDivorced_17 <- ifelse(romantic.partnerships$Status_2017 %in% c("Married", "Widowed"), 1, 0)
+marital.partnerships$NotDivorced_13 <- ifelse(marital.partnerships$Status_2013 %in% c("Married", "Widowed"), 1, 0)
+marital.partnerships$NotDivorced_17 <- ifelse(marital.partnerships$Status_2017 %in% c("Married", "Widowed"), 1, 0)
 
 
-romantic.partnerships.statuses.2013.lookup <- c(romantic.partnerships$Status_2013, romantic.partnerships$Status_2013)
-names(romantic.partnerships.statuses.2013.lookup) <- c(romantic.partnerships$Husband, romantic.partnerships$Wife)
+marital.partnerships.statuses.2013.lookup <- c(marital.partnerships$Status_2013, marital.partnerships$Status_2013)
+names(marital.partnerships.statuses.2013.lookup) <- c(marital.partnerships$Husband, marital.partnerships$Wife)
 
-romantic.partnerships.statuses.2017.lookup <- c(romantic.partnerships$Status_2017, romantic.partnerships$Status_2017)
-names(romantic.partnerships.statuses.2017.lookup) <- c(romantic.partnerships$Husband, romantic.partnerships$Wife)
+marital.partnerships.statuses.2017.lookup <- c(marital.partnerships$Status_2017, marital.partnerships$Status_2017)
+names(marital.partnerships.statuses.2017.lookup) <- c(marital.partnerships$Husband, marital.partnerships$Wife)
 
-romantic.partnerships.spouse.lookup <- c(romantic.partnerships$Wife, romantic.partnerships$Husband)
-names(romantic.partnerships.spouse.lookup) <- c(romantic.partnerships$Husband, romantic.partnerships$Wife) ## This works as there are no same-sex couplings to our knowledge
+marital.partnerships.spouse.lookup <- c(marital.partnerships$Wife, marital.partnerships$Husband)
+names(marital.partnerships.spouse.lookup) <- c(marital.partnerships$Husband, marital.partnerships$Wife) ## This works as there are no same-sex couplings to our knowledge
 
 
-individuals.TN.13$Status_2013 <- romantic.partnerships.statuses.2013.lookup[individuals.TN.13$IndivID]
-individuals.TN.13$Status_2017 <- romantic.partnerships.statuses.2017.lookup[individuals.TN.13$IndivID]
-individuals.TN.13$Spouse <- romantic.partnerships.spouse.lookup[individuals.TN.13$IndivID]
+individuals.TN.13$Status_2013 <- marital.partnerships.statuses.2013.lookup[individuals.TN.13$IndivID]
+individuals.TN.13$Status_2017 <- marital.partnerships.statuses.2017.lookup[individuals.TN.13$IndivID]
+individuals.TN.13$Spouse <- marital.partnerships.spouse.lookup[individuals.TN.13$IndivID]
 
 
 individuals.TN.13$Status_2013[is.na(individuals.TN.13$Status_2013)] <- "Not Married" 
@@ -358,10 +358,10 @@ TN.relatedness.immediate <- (TN.relatedness == 0.5)*1 ## Multiplying the matrix 
 
 
 ## SECOND, we must account for ancestral partnerships between people who are generally long-deceased and thus who's marriages we know little about. 
-## Specifically, we identify ancestral partnerships through their presence in our data on parentage and their absence from our data on romantic partnerships.
-## In all cases, the relevant parties are dead, so we list them as "Widowed" when adding the ancestral partnerships to our romantic partnerships data.
+## Specifically, we identify ancestral partnerships through their presence in our data on parentage and their absence from our data on marital partnerships.
+## In all cases, the relevant parties are dead, so we list them as "Widowed" when adding the ancestral partnerships to our marital partnerships data.
 parents.temp <- parents ## Create a copy of the parents data we can modify so we do not destroy the original.
-parents.temp$InPartnerships <- paste0(parents$Father,"_",parents$Mother) %in% paste0(romantic.partnerships$Husband,"_",romantic.partnerships$Wife) ## Identify which pairs of people produce offspring but do not appear in the romantic partnerships data
+parents.temp$InPartnerships <- paste0(parents$Father,"_",parents$Mother) %in% paste0(marital.partnerships$Husband,"_",marital.partnerships$Wife) ## Identify which pairs of people produce offspring but do not appear in the marital partnerships data
 parents.temp$ToAdd <- (parents.temp$InPartnerships == FALSE & parents.temp$Father != "999" & parents.temp$Mother != "999") ## This says, "identify which sets of parents are ancestral and lacking identification [i.e., missing ID code 999]"
 parents.temp <- data.frame(Husband = parents.temp$Father, ## This create a data frame of ALL pairs of people who produce children which we need to filter based on ToAdd, otherwise the variables Status_2013/2017 and NotDivorced_13/17 are incorrect!
                      Wife = parents.temp$Mother, 
@@ -374,7 +374,7 @@ parents.temp <- data.frame(Husband = parents.temp$Father, ## This create a data 
 parents.temp <- subset(parents.temp, parents.temp$ToAdd == TRUE)
 parents.temp$ToAdd <- NULL
 
-romantic.partnerships <- rbind(romantic.partnerships, parents.temp) ## Merge the ancestral partnerships with the known romantic partnerships
+marital.partnerships <- rbind(marital.partnerships, parents.temp) ## Merge the ancestral partnerships with the known marital partnerships
 
 
 ## THIRD, identify those who are married in 2013, excluding people who are divorced/separated — BUT NOT PEOPLE WHO ARE WIDOWED (see above)! 
@@ -388,35 +388,35 @@ romantic.partnerships <- rbind(romantic.partnerships, parents.temp) ## Merge the
 ## This is because the affinal path runs from the ex-husband to his son (one step), from the son to the ex-wife (one step), and then from the ex-wife to the ex-brother-in-law (one step).
 ## But, if they had stayed married, affinal relatedness between the ex-husband and the ex-brother-in-law would have been 0.25.
 ## This is because the affinal path would have run from the ex-husband to the ex-wife and then from the ex-wife to the ex-brother-in-law (two steps versus three step)
-romantic.partnerships.married.13 <- subset(romantic.partnerships, NotDivorced_13 == 1) 
+marital.partnerships.married.13 <- subset(marital.partnerships, NotDivorced_13 == 1) 
 
 
 ## FOURTH, construct a data frame of spousal dyads for 2013 (i.e., Husband_ID + Wife_ID)
 ## Recall from above that "NotDivorced_13" is simply a binary vector for people who are Married/Widowed (== 1) or Divorced (== 0).
-romantic.partnerships.married.13 <- romantic.partnerships.married.13[, c("Husband", "Wife", "NotDivorced_13")] 
+marital.partnerships.married.13 <- marital.partnerships.married.13[, c("Husband", "Wife", "NotDivorced_13")] 
 
 
-## FIFTH, create a symmetric matrix for 2013 spousal relationships, populated with values from romantic.partnerships.married.13.
+## FIFTH, create a symmetric matrix for 2013 spousal relationships, populated with values from marital.partnerships.married.13.
 ## Note that we use ALL individuals in the pedigree for the two villages — both dead and alive — hence the pegging of spouse.matrix to TN.relatedness
 spouse.matrix <- matrix(data = 0, nrow = nrow(TN.relatedness.immediate), ncol = ncol(TN.relatedness.immediate))
 rownames(spouse.matrix) <- rownames(TN.relatedness.immediate)
 colnames(spouse.matrix) <- colnames(TN.relatedness.immediate)
 
-for(i in 1:nrow(romantic.partnerships.married.13)){
+for(i in 1:nrow(marital.partnerships.married.13)){
   
   ## Marriage is of course symmetric. Thuse, we must add a value of one to the matrix for the spousal dyad (Husband_ID, Wife_ID) AND for the spousal dyad (Wife_ID, Husband_ID)!
-  spouse.matrix[which(rownames(spouse.matrix) == romantic.partnerships.married.13$Husband[i]), which(colnames(spouse.matrix) == romantic.partnerships.married.13$Wife[i])] <- romantic.partnerships.married.13$NotDivorced_13[i] 
-  spouse.matrix[which(rownames(spouse.matrix) == romantic.partnerships.married.13$Wife[i]), which(colnames(spouse.matrix) == romantic.partnerships.married.13$Husband[i])] <- romantic.partnerships.married.13$NotDivorced_13[i]
+  spouse.matrix[which(rownames(spouse.matrix) == marital.partnerships.married.13$Husband[i]), which(colnames(spouse.matrix) == marital.partnerships.married.13$Wife[i])] <- marital.partnerships.married.13$NotDivorced_13[i] 
+  spouse.matrix[which(rownames(spouse.matrix) == marital.partnerships.married.13$Wife[i]), which(colnames(spouse.matrix) == marital.partnerships.married.13$Husband[i])] <- marital.partnerships.married.13$NotDivorced_13[i]
 }
 rm(i)
 table(spouse.matrix == t(spouse.matrix)) ## Sanity check. Should all be TRUE.
-## N.B. sum(spouse.matrix)/2 != nrow(romantic.partnerships.married.13) as one couple in romantic.partnerships.married.13 were married, then divorced, and then remarried in 2013 such that their spousal dyad appears twice. 
-## RUN: paste0(romantic.partnerships$Husband,"_",romantic.partnerships$Wife)[duplicated(paste0(romantic.partnerships$Husband,"_",romantic.partnerships$Wife))]
+## N.B. sum(spouse.matrix)/2 != nrow(marital.partnerships.married.13) as one couple in marital.partnerships.married.13 were married, then divorced, and then remarried in 2013 such that their spousal dyad appears twice. 
+## RUN: paste0(marital.partnerships$Husband,"_",marital.partnerships$Wife)[duplicated(paste0(marital.partnerships$Husband,"_",marital.partnerships$Wife))]
 
 
 ## Checks for missing entries.
-setdiff(romantic.partnerships.married.13$Husband, rownames(TN.relatedness.immediate))
-setdiff(romantic.partnerships.married.13$Wife, rownames(TN.relatedness.immediate))
+setdiff(marital.partnerships.married.13$Husband, rownames(TN.relatedness.immediate))
+setdiff(marital.partnerships.married.13$Wife, rownames(TN.relatedness.immediate))
 
 
 ## SIXTH, create a composite binary matrix for immediate kin dyads and for spousal dyads which will be used to calculate the affinal path lengths.
