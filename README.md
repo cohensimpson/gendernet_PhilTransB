@@ -48,7 +48,7 @@ Finally, when re-running our analyses, some numerical results may differ slightl
 
 
 ## Key Citations for Replicators
-[1] Simpson, C.R. & Power, E.A. Forthcoming. “Dynamics of cooperative networks partially attributable to gender amongst South Indian Tamils.” Philosophical Transactions of the Royal Society B: Biological Sciences.
+[1] Simpson, C.R. & Power, E.A. “Dynamics of Cooperative Networks Partially Attributable to Gender Amongst South Indian Tamils.” Working Paper.
 
 [2] Power, E.A. (2017). Social Support Networks and Religiosity in Rural South India. Nature Human Behaviour, 1(3), 0057. https://doi.org/10.1038/s41562-017-0057
 
