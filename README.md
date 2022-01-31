@@ -44,8 +44,6 @@ Finally, when re-running our analyses, some numerical results may differ slightl
 
  12) rsiena-1.3.5.tar.gz ("RSiena" source code used to fit Stochastic Actor-Oriented Models)
 
- 13) R-4.1.2-arm64.pkg (Apple M1 Mac OSX version of R)
-
 
 ## Key Citations for Replicators
 [1] Simpson, C.R. & Power, E.A. “Dynamics of Cooperative Networks Partially Attributable to Gender Amongst South Indian Tamils.” Working Paper.
