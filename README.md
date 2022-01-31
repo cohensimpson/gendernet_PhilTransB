@@ -19,7 +19,7 @@ We have treated both scripts a bit like running "notebooks". Accordingly, throug
 ## Executables & Packages
 In addition to the R scripts, we have also included in the repository the installation files for the version of the two R packages integral to our analyses — i.e, the packages "RSiena" (https://github.com/snlab-nl/rsiena/wiki) and "groundhog" (https://groundhogr.com). Note that you may need to first install GCC (https://formulae.brew.sh/formula/gcc) — i.e., the GNU Compiler Collection — before attempting to install RSiena from source. Also, see the list of loaded packages at the very beginning of the R scripts for other short notes on dependencies that you may need to address.
 
-For the unfamiliar, the groundhog package is a fabulous innovation that is designed to make package installation in the name of reproducible research very, very easy. Specifically, it uses the CRAN/MRAN database and date-based version control to load the packages necessary for a given set of analyses, as well as their dependencies. Please see the first 50-ish lines of the R scripts for details. Versions of RSiena are inconsistently pushed to CRAN/MRAN and thus RSiena will need to be installed from source using the file we have included on the repository.
+For the unfamiliar, the groundhog package is a fabulous innovation that is designed to make package installation in the name of reproducible research very, very easy. Specifically, it uses the CRAN/MRAN database and date-based version control to load the packages necessary for a given set of analyses, as well as their dependencies. Please see the first 50-ish lines of the R scripts for details. Versions of RSiena are inconsistently pushed to CRAN/MRAN and thus RSiena will need to be installed from source using the file we have included here in the repository.
 
 Finally, when re-running our analyses, some numerical results may differ slightly from those reported in the paper due to stochastic perturbations. We have used the same random seed (20180709) to ensure exact reproducibility wherever possible. However, this is not always an option depending on the function.
 
@@ -32,7 +32,7 @@ Finally, when re-running our analyses, some numerical results may differ slightl
 
  3) TN_Indiv.csv (Data on Individual Residents in Village 1 and Village 2 [Restricted Access; Data Sharing/Ethics Agreement Required])
  4) TN_Fam.csv (Data on Family Units/Households in Village 1 and Village 2 [Restricted Access; Data Sharing/Ethics Agreement Required])
- 5) TN_Partnerships.csv (Data on Residents' Romantic Partnerships [Restricted Access; Data Sharing/Ethics Agreement Required])
+ 5) TN_Partnerships.csv (Data on Residents' Marital Partnerships [Restricted Access; Data Sharing/Ethics Agreement Required])
  6) TN_Kinship.csv (Data on Residents' Genetic Kin [Restricted Access; Data Sharing/Ethics Agreement Required])
  7) TN_Dist.csv (Data on Geographic Proximity Between Residents' Homes [Restricted Access; Data Sharing/Ethics Agreement Required])
  8) Ten_1317.csv (Network Data for Village 1 [Restricted Access; Data Sharing/Ethics Agreement Required])
