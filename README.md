@@ -5,13 +5,7 @@ Helping behaviour is thought to play a major role in the genetic and cultural ev
 
 <br>
 
-**a.** 
-
-<img src="https://github.com/cohensimpson/gendernet_PhilTransB/blob/main/Figure%201a_Stylised_Female_PhilTransB_Networks_Gender_Cooperation.svg" width = "300">
-
-**b.**
-
-<img src="https://github.com/cohensimpson/gendernet_PhilTransB/blob/main/Figure%201b_Stylised_Male_PhilTransB_Networks_Gender_Cooperation.svg" width = "350">
+<img src="https://github.com/cohensimpson/gendernet_PhilTransB/blob/main/PhilTransB_F1_Stylised_Female_Male.svg" width = "350">
 <br> 
 
 _Stylised sex-homogenous egocentric networks based on evolutionary theorising of male and female sociality as, respectively, “dyadic” and “group-based”. Arcs (i.e., directed connections) indicate hypothetical aid relationships — here, to whom does one turn to for help? And arcs are coloured based on relationship type — where dark-blue arcs emanate from kin, light-blue arcs emanate from friends, and yellow arcs emanate from neither kin nor friends. Red vertices (i.e., nodes) indicate ego. Vertices for ego’s alters are coloured to reflect status relative to ego — where darker-coloured vertices are more high-status than ego, white vertices are more low-status, and grey vertices are of a similar status. **Panel a.** Prototypical female egocentric network characterised by low absolute size (i.e., few direct and indirect alters), low interconnectivity, a large degree of status homogeneity, and no supportive bonds with non-kin and non-friends. **Panel b.** Prototypical male egocentric network characterised by large absolute size (i.e., multiple direct and indirect alters), high interconnectivity and thus large ego embeddedness, a large degree of status heterogeneity, and multiple supportive bonds between kin, friends, non-kin and non-friends. Lengths of arcs, placement of vertices, and spacing between arcs/vertices are all purely aesthetic._
