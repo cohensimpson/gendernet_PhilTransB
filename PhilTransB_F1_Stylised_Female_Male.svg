@@ -989,14 +989,14 @@
 <rect x="769.9813" width="26.4557" height="30" y="352.9675" clip-path="url(#clipPath2)" stroke="none"/>
 </g>
 <g stroke-miterlimit="1.45" font-size="25px" font-family="'Helvetica'" transform="matrix(1,0,0,1,-759,-342)" stroke-linecap="butt">
-<text x="772.7092" xml:space="preserve" y="374.718" clip-path="url(#clipPath2)" stroke="none">a.</text>
+<text x="772.7092" xml:space="preserve" y="374.718" clip-path="url(#clipPath2)" stroke="none" font-weight= "bold">a.</text>
 </g>
 <g fill="white" stroke-miterlimit="1.45" transform="matrix(1,0,0,1,-759,-342)" stroke-linecap="butt" stroke="white">
 <rect fill="none" x="769.9813" width="26.4557" height="30" y="352.9675" clip-path="url(#clipPath2)"/>
 <rect stroke-linecap="square" x="1532.7696" y="356.2943" clip-path="url(#clipPath2)" width="29.1224" height="30" stroke="none" stroke-miterlimit="10"/>
 </g>
 <g stroke-miterlimit="1.45" font-size="25px" font-family="'Helvetica'" transform="matrix(1,0,0,1,-759,-342)" stroke-linecap="butt">
-<text x="1536.3308" xml:space="preserve" y="378.0448" clip-path="url(#clipPath2)" stroke="none">b.</text>
+<text x="1536.3308" xml:space="preserve" y="378.0448" clip-path="url(#clipPath2)" stroke="none" font-weight= "bold">b.</text>
 </g>
 <g fill="white" stroke-miterlimit="1.45" transform="matrix(1,0,0,1,-759,-342)" stroke-linecap="butt" stroke="white">
 <rect fill="none" x="1532.7696" width="29.1224" height="30" y="356.2943" clip-path="url(#clipPath2)"/>
