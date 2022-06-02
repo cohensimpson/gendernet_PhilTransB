@@ -12,6 +12,7 @@ Helping behaviour is thought to play a major role in the genetic and cultural ev
 _**Figure 1.** Stylisation of sex-homogenous one-degree (i.e., one-step) egocentric networks based on evolutionary theorising of male and female sociality as, respectively, “dyadic” and “group-based”. Arcs (i.e., directed connections) indicate hypothetical aid relationships — i.e., to whom does one turn to for help? — and are coloured based on relationship type. Dark-blue arcs emanate from kin, light-blue arcs emanate from friends, and yellow arcs emanate from in-group strangers who are neither kin nor friend. Red vertices (i.e., nodes) indicate ego. Vertices for ego’s alters are coloured to reflect status relative to ego — where darker-coloured vertices are more high-status than ego (i.e., the focal actor), white vertices are more low-status, and grey vertices are of a similar status. **Panel a.** Theorised female egocentric network characterised by low absolute size, low interconnectivity, a large degree of status homogeneity, and no supportive bonds with non-kin and non-friends. **Panel b.** Theorised male egocentric network characterised by large absolute size, high interconnectivity, a large degree of status heterogeneity, and multiple supportive bonds between kin, friends, non-kin, and non-friends. Lengths of arcs, placement of vertices, and spacing between arcs/vertices are purely aesthetic._
 
 <br>
+<br> 
 
 ![](https://github.com/cohensimpson/gendernet_PhilTransB/blob/main/F5_Gender_Cooperative_Networks.svg) 
 
