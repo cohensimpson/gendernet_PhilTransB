@@ -4,6 +4,8 @@
 *.txt
 *.docx
 *.graphml
-SAOM Network Sub-graphs.svg
 *.afdesign
 *.pptx
+*.out
+*SAOM Network Sub-graphs.svg
+*.eps

@@ -1,50 +1,36 @@
-################################# Dynamics of Cooperative Networks Partially Attributable to Gender Amongst South Indian Tamils
+################################# Dynamics of Cooperative Networks Associated With Gender Among South Indian Tamils
 ################################# Replication Code: Data Preparation
- 
 
 
 
-library(groundhog)
 
+library(purrr) 
+library(dplyr) 
 
-## The groundhog.library() command requires two values. Like library(), you indicate 
-## which package you want to load. Additionally, you must enter a date — any date (formatted as "yyyy-mm-dd"). 
-## Groundhog will load the most recent version of the named package from CRAN from the entered 
-## date. It will also load all dependencies of that package current on the entered date.
-## Put simply, and borrowing from the package creator (see: https://groundhogr.com):
+library(network) 
+library(sna) 
+library(igraph) 
+library(intergraph)
 
-## 1) "groundhog" Makes R scripts reproducible by "replacing library("pkg")" with "groundhog.library("pkg", "date")"
-## 2) groundhog.library() loads a package and its dependencies, as available on the chosen date.
-## 3) Packages and their dependencies get automatically installed on their initial loading via groundhog if needed 
-## 4) You will need to create a dedicated folder for groundhog package installs during the initial executing of "library(groundhog)").
-## 4) Installation keeps, rather than replaces, existing other versions of a package of interest (e.g., versions from other dates).
-## 5) If you want to stop using groundhog at any time, simply: replace "groundhog.library("pkg", "date")" with library("pkg") when loading a package of interest
+library(kinship2) 
 
-## Note that versions of RSiena are inconsistently pushed to CRAN (which groundhog pulls from). 
-## Accordingly, we have included the source code for the version of RSiena used for this project
-## with all of the other replication materials. You will have to install RSiena manually.
-## Similarly, we have included the source code for the version of groundhog used for this
-## project with the replication materials and it should also be installed manually first.
+library(ggplot2) 
+library(ggstance) ## Used for geom_pointrangeh 
+library(viridis) 
+library(jtools)
+library(ggthemes)
+library(scales) ## used for alpha() # https://www.r-bloggers.com/2018/08/using-the-scales-package-to-change-alpha-in-base-r-plots/
+library(ggh4x) ## Used for facetted_pos_scales()
 
-## Finally, note that groundhog may prompt you to restart R immediately after loading packages due to version clashes and then reload the packages with groundhog again.
-## This is a bit annoying, but please be sure to follow the groundhog prompts.
+library(scatterplot3d) # http://www.sthda.com/english/wiki/scatterplot3d-3d-graphics-r-software-and-data-visualization
+library(svglite) ## Used to save ggplot2 figures as .svg files
 
-groundhog.library("purrr", "2021-10-10", quiet.install = FALSE)
-groundhog.library("dplyr", "2021-10-10", quiet.install = FALSE) 
+library(reshape2) 
 
-groundhog.library("network", "2021-10-10", quiet.install = FALSE)
-groundhog.library("sna", "2021-10-10", quiet.install = FALSE)
-groundhog.library("igraph", "2021-10-10", quiet.install = FALSE)
+library(Matrix)
 
-groundhog.library("kinship2", "2021-10-10", quiet.install = FALSE)
-
-groundhog.library("ggplot2", "2021-10-10", quiet.install = FALSE)
-groundhog.library("reshape2", "2021-10-10", quiet.install = FALSE)
-groundhog.library("viridis", "2021-10-10", quiet.install = FALSE)
-
-groundhog.library("pastecs", "2021-10-10", quiet.install = FALSE)
-groundhog.library("stargazer", "2021-10-10", quiet.install = FALSE)
-
+library(pastecs) 
+library(stargazer) 
 
 library(RSiena) ## You may also need to install the package ‘tcltk’ which RSiena uses to display model progress when estimation is not set to silent.
 
@@ -53,12 +39,12 @@ library(parallel) ## Not on CRAN, automatically installed with Base R.
 
 set.seed(20180709)
 options(scipen = 8)
-options(digits = 5)
+options(digits = 5) 
 options(max.print = 50000000)
 
+ 
 
-
-
+ 
 #################################### LOAD DATA FOR TENPATTI & ALAKAPURAM ####################################
 ## Read in the files that include details of each individual, including age, gender, caste & religion, years of education, household wealth, religious participation, etc.
 village.names <- c("Alakapuram", "Tenpatti")
@@ -250,7 +236,7 @@ table(individuals.TN.13$Reservation_Status)
 
 
 #################################### VARIABLE CONSTRUCTION: NATAL VILLAGE/IMMIGRANT STATUS #################################### 
-individuals.TN.13$non.natal.village <- ifelse(individuals.TN.13$NativePlace == individuals.TN.13$Location_2013, 0, 1) # (i.e., natal resident or not),
+individuals.TN.13$non.natal.village <- ifelse(individuals.TN.13$NativePlace == individuals.TN.13$Location_2013, 0, 1) # (i.e., non-natal resident = 1 vs native = 0),
 
 
 
