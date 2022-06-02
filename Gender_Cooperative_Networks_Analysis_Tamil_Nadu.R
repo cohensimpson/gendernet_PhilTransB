@@ -2206,7 +2206,7 @@ scatterplot3d(x = H7$outdegree_i, y = H7$indegree_j, z = H7$lincomb,
               y.margin.add = 0.5, # add additional space between tick mark labels and axis label of the y axis
               col.axis = "#767676", col.grid = "#767676", col.lab = "#767676", col.main = "#767676")
 
-legend(x = -21, y = -7.5, legend = c("Women", "Men"), col = colors, pch = 16, cex = 2, horiz = TRUE, bty = "n", xpd = NA)
+legend(x = -21, y = -7.5, legend = c("Women", "Men"), col = colors, pch = 16, cex = 2, text.col = "#767676", horiz = TRUE, bty = "n", xpd = NA)
 
 dev.off()   
 
