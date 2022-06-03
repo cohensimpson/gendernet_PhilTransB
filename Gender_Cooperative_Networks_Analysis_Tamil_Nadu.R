@@ -520,7 +520,7 @@ for(i in names(villages.TN.sienaFits)){ # model <- "Model_3"
                                   TN.Nets[["Strength_2013"]]
   )
   general_reputation <- general_reputation[individuals.TN.13$IndivID] ## Ensure things are in the right order
-  general_reputation <- sqrt(general_reputation) ## Lets use the raw counts as opposed to the square-root transformation as the former makes Fig. 4 more easy to interpret.
+  general_reputation <- sqrt(general_reputation) ## Use the square-root transformation to match the fitted models.
   
   ## Binary Kinship for GenderedEgoStatsDistribution
   consanguineal.kin <- relatednessTN.13
@@ -2399,20 +2399,21 @@ length(table(individuals.TN.13$GPS_2013)) ## How many households?
 table(ifelse(individuals.TN.13$Location_2013 == "Tenpatti", 1, 0), useNA = "always") ## 1 == Tenpatti; 0 == Alakapuram
 
 
+## Reputation Nominations
+general_reputation <- colSums(TN.Nets[["Generous_2013"]] +
+                                TN.Nets[["Influence_2013"]] +
+                                TN.Nets[["Character_2013"]] +
+                                TN.Nets[["Strength_2013"]]
+)
+general_reputation <- general_reputation[individuals.TN.13$IndivID] ## Ensure things are in the right order
+
+
 stargazer( data.frame( Age = 2013-individuals.TN.13$BirthYear,
                        `Years of Education` = individuals.TN.13$EduYears_2013,
                        `Household Wealth` = individuals.TN.13$HouseholdWealth_2013,
                        `Household Wealth (log)` = log(individuals.TN.13$HouseholdWealth_2013),
-                       `General Reputation` = colSums(TN.Nets[["Generous_2013"]] + 
-                                                        TN.Nets[["Influence_2013"]] + 
-                                                        TN.Nets[["Character_2013"]] + 
-                                                        TN.Nets[["Strength_2013"]]
-                       ),
-                       `General Reputation (Sqrt)` = sqrt(colSums(TN.Nets[["Generous_2013"]] + 
-                                                                    TN.Nets[["Influence_2013"]] + 
-                                                                    TN.Nets[["Character_2013"]] + 
-                                                                    TN.Nets[["Strength_2013"]])
-                       )
+                       `General Reputation` = general_reputation,
+                       `General Reputation (Sqrt)` = sqrt(general_reputation)
 ), 
 summary = T, summary.logical = T, digits = 2,
 summary.stat = c("n", "mean", "sd", "median", "min", "max"),
@@ -2450,7 +2451,7 @@ table(friendshipTN.13, useNA = "always")
 ## Geographic (Inter-household) Distance; symmetric dyadic covariate
 stat.desc(interhousehold.dist.TN.13[upper.tri(interhousehold.dist.TN.13, diag = F)]) 
 
- 
+
 
 
 ################################# SI TABLE 7: PARAMETER ESTIMATES #################################
