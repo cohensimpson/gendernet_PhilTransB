@@ -1246,7 +1246,7 @@ H1.linear.combination <- function(gender = NULL,
   
   ## H1: Out-degree/Trait-based (Gender) Activity
   
-  ## First, should the linear combination be for women (female == 1) or men (female == 0)
+  ## First, should the linear combination be for women (female == 1) or men (male == 0)
   female <- as.numeric(gender == "female")
   
   
@@ -1327,7 +1327,7 @@ H2.linear.combination <- function(gender = NULL,
   
   ## H2: Reciprocity
   
-  ## First, should the linear combination be for women (female == 1) or men (female == 0)
+  ## First, should the linear combination be for women (female == 1) or men (male == 0)
   female <- as.numeric(gender == "female")
   
   
@@ -1418,7 +1418,7 @@ H3.linear.combination <- function(gender = NULL,
   
   ## H3: Kinship
   
-  ## First, should the linear combination be for women (female == 1) or men (female == 0)
+  ## First, should the linear combination be for women (female == 1) or men (male == 0)
   female <- as.numeric(gender == "female")
   
   
@@ -1504,7 +1504,7 @@ H4.linear.combination <- function(gender = NULL,
   
   ## H4: Friendship
   
-  ## First, should the linear combination be for women (female == 1) or men (female == 0)
+  ## First, should the linear combination be for women (female == 1) or men (male == 0)
   female <- as.numeric(gender == "female")
   
   
@@ -1590,7 +1590,7 @@ H5a.linear.combination <- function(gender = NULL,
   
   ## H5a: Transitive Triplets
   
-  ## First, should the linear combination be for women (female == 1) or men (female == 0)
+  ## First, should the linear combination be for women (female == 1) or men (male == 0)
   female <- as.numeric(gender == "female")
   
   
@@ -1696,7 +1696,7 @@ H5b.linear.combination <- function(gender = NULL,
   
   ## H5b: Three Cycles
   
-  ## First, should the linear combination be for women (female == 1) or men (female == 0)
+  ## First, should the linear combination be for women (female == 1) or men (male == 0)
   female <- as.numeric(gender == "female")
   
   
@@ -1791,7 +1791,7 @@ H6.linear.combination <- function(gender = NULL,
   
   ## H6: Absolute Difference: General Reputation
   
-  ## First, should the linear combination be for women (female == 1) or men (female == 0)
+  ## First, should the linear combination be for women (female == 1) or men (male == 0)
   female <- as.numeric(gender == "female")
   
   
@@ -1876,7 +1876,7 @@ H7.linear.combination <- function(gender = NULL,
   
   ## Bonus: Same Gender
   
-  ## First, should the linear combination be for women (female == 1) or men (female == 0)
+  ## First, should the linear combination be for women (female == 1) or men (male == 0)
   female <- as.numeric(gender == "female")
   
   
