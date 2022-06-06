@@ -1229,7 +1229,7 @@ ggsave(plot = coefficient.plot,
        filename = "F4_Gender_Cooperative_Networks.svg", device = "svg", dpi = 900,
        scale = 3.2, width = 4.35, height = 5, units = "in", bg = "transparent")
 
-
+ 
 
 
 
