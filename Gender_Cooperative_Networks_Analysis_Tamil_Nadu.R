@@ -1225,7 +1225,7 @@ coefficient.plot <- (ggplot(data = siena.coefs.long.no.rate,
 
 
 # plot(coefficient.plot)
-ggsave(plot = coefficient.plot,
+ggsave(plot = coefficient.plot, 
        filename = "F4_Gender_Cooperative_Networks.svg", device = "svg", dpi = 900,
        scale = 3.2, width = 4.35, height = 5, units = "in", bg = "transparent")
 
@@ -2308,7 +2308,7 @@ ggsave(plot = gof.box.plot,
        filename = "F6_Gender_Cooperative_Networks.svg", device = "svg", dpi = 900,
        scale = 3.5, width = 5, height = 1.50, units = "in", bg = "transparent")
 
- 
+
 
 
 ################################# SI TABLE 2 + SI TABLE 3: NETWORK DESCRIPTIVE STATISTICS (BY WAVE) #################################
