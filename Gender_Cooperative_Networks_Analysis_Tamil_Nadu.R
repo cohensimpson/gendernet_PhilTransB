@@ -1163,11 +1163,11 @@ coefficient.plot <- (ggplot(data = siena.coefs.long.no.rate,
                      + geom_vline(xintercept = 1 - !exp, linetype = 2, size = .25) 
                      + labs(title = NULL,
                             y = NULL,
-                            x = expression(Log~Odds~Ratio~of~italic(x)[ij]~" = "~1~" = "~Alter~is~Source~of~Social~Support~"for"~Ego~" (i = Ego, j = Alter)"~plain("+ 95% Confidence Interval")), # https://stat.ethz.ch/R-manual/R-devel/library/grDevices/html/plotmath.html
+                            x = expression(Log~Odds~Ratio~of~italic(x)[ij]~" = "~1~" = "~Alter~is~Source~of~Social~Support~"for"~Ego~"(i = Ego, j = Alter)"~plain("+ 95% Confidence Interval")), # https://stat.ethz.ch/R-manual/R-devel/library/grDevices/html/plotmath.html
                             # tag = "a",
                             ## This sections uses the paste0 function to combine various bits of information about the rate parameter to create the caption at the bottom of Figure 1.
                             caption = paste0("\n", 
-                                             "Rate (Avg. Tie Changes) Wave 1 (2013) → Wave 2 (2017): ",
+                                             "Rate (Avg. Number of Simulated Tie Changes) Wave 1 (2013) → Wave 2 (2017): ",
                                              "Model 1 (",
                                              "Est. = ",  sprintf("%.3f", siena.coefs.long.only.rate$estimate[ which(siena.coefs.long.only.rate$model == "Baseline") ]),
                                              "; S.E. = ",  sprintf("%.3f", siena.coefs.long.only.rate$std.error[ which(siena.coefs.long.only.rate$model == "Baseline") ]),
@@ -1181,12 +1181,7 @@ coefficient.plot <- (ggplot(data = siena.coefs.long.no.rate,
                                              "Model 3 (",
                                              "Est. = ",  sprintf("%.3f", siena.coefs.long.only.rate$estimate[ which(siena.coefs.long.only.rate$model == "Social Constraints") ]),
                                              "; S.E. = ",  sprintf("%.3f", siena.coefs.long.only.rate$std.error[ which(siena.coefs.long.only.rate$model == "Social Constraints") ]),
-                                             ")",
-                                             "\n", 
-                                             "\n", 
-                                             "SAOMs fit using Z-scores for age, wealth (Natural Log Indian Rupees), general-reputation nominations (Square Root), and geographic distance (Natural Log Metres). 
-                                             Age [Mean = 44.01; S.D. = 14.70]; Log(Wealth) [Mean = 12.62; S.D. = 0.94]; Sqrt(General Reputation) [Mean = 2.28; S.D. = 1.97]; Log(Geographic Distance + 1) [Mean = 5.69; S.D. = 1.36].
-                                             Log/square-root transformations taken prior to standardisation. S.D. = Standard Deviation."
+                                             ")"
                             )
                      ) 
                      + theme_nice(style = "black") 
@@ -2072,6 +2067,7 @@ rm(H7.female, H7.male)
 
 
 ## Create the 3d Scatterplot  
+## Plot Features
 colors <-  alpha(c("#0077BB", "#EE7733"), 1.00) # "#0077BB" == Blue (Women); "#EE7733" == Orange
 bullet.points <- c(16, 4) ## Bullet points for "statistical signifiance" at the 95% level
 bullet.size <- c(1, 0.05)
@@ -2083,7 +2079,139 @@ par(mfrow = c(2, 4), # 8 figures arranged in 2 rows and 4 columns
     oma = c(1, 1, 1, 1), # Outer margin area; https://derekogle.com/IFAR/supplements/plotting/CommonAxisLabels.html; https://stackoverflow.com/a/71486472
     cex.main = 1.75, cex.axis = 1.25, cex.lab = 1.15 # https://stackoverflow.com/questions/4241798/how-to-increase-font-size-in-a-plot-in-r
 )
- 
+
+
+## Function to Add Custom Gridlines
+## Pulled From: http://www.sthda.com/english/wiki/scatterplot3d-3d-graphics-r-software-and-data-visualization
+#' Add grids to a scatterplot3d
+#' 
+#' @description The goal of this function is to add grids on an existing
+#'  plot created using the package scatterplot3d
+#' @param x,y,z numeric vectors specifying the x, y, z coordinates of points.
+#'  x can be a matrix or a data frame containing 3 columns corresponding to
+#'  the x, y and z coordinates. In this case the arguments y and z are optional
+#' @param grid specifies the facet(s) of the plot on which grids should be drawn.
+#'  Possible values are the combination of "xy", "xz" or "yz".
+#'  Example: grid = c("xy", "yz"). The default value is TRUE to add grids only on xy facet.
+#' @param col.grid,lty.grid color and line type to be used for grids
+#' @param lab a numerical vector of the form c(x, y, len).
+#'  The values of x and y give the (approximate) number of tickmarks on the x and y axes.
+#' @param lab.z the same as lab, but for z axis
+#' @param scale.y of y axis related to x- and z axis
+#' @param angle angle between x and y axis
+#' @param "xlim, ylim, zlim" the x, y and z limits (min, max) of the plot.
+#' 
+#' @note
+#' Users who want to extend an existing scatterplot3d graphic with the
+#'  function addgrids3d, should consider to set the arguments scale.y, angle, ...,
+#'  to the value used in scatterplot3d.
+#' 
+#' @author Alboukadel Kassambara \email{alboukadel.kassambara@@gmail.com}
+#' @references http://www.sthda.com
+#' 
+#' @example
+#' library(scatterplot3d)
+#' data(iris)
+#' scatterplot3d(iris[, 1:3], pch = 16, grid=T, box=F)
+#' addgrids3d(iris[, 1:3], grid = c("xy", "xz", "yz"))
+addgrids3d <- function(x, y=NULL, z=NULL, grid = TRUE,
+                       col.grid = "grey", lty.grid = par("lty"),
+                       lab = par("lab"), lab.z = mean(lab[1:2]),
+                       scale.y = 1, angle = 40,
+                       xlim=NULL, ylim=NULL, zlim=NULL){
+  
+  
+  if(inherits(x, c("matrix", "data.frame"))){
+    x <- as.data.frame(x)
+    y <- unlist(x[,2])
+    z <- unlist(x[,3])
+    x <- unlist(x[,1])
+  }
+  
+  p.lab <- par("lab")
+  
+  angle <- (angle%%360)/90
+  yz.f <- scale.y * abs(if (angle < 1) angle else if (angle >3) angle - 4 else 2 - angle)
+  yx.f <- scale.y * (if (angle < 2) 1 - angle else angle - 3)
+  
+  
+  # x axis range
+  x.range <- range(x[is.finite(x)], xlim)
+  x.prty <- pretty(x.range, n = lab[1], min.n = max(1, min(0.5 *lab[1], p.lab[1])))
+  x.scal <- round(diff(x.prty[1:2]), digits = 12)
+  x <- x/x.scal
+  x.range <- range(x.prty)/x.scal
+  x.max <- ceiling(x.range[2])
+  x.min <- floor(x.range[1])
+  if (!is.null(xlim)) {
+    x.max <- max(x.max, ceiling(xlim[2]/x.scal))
+    x.min <- min(x.min, floor(xlim[1]/x.scal))
+  }
+  x.range <- range(x.min, x.max)
+  
+  # y axis range
+  y.range <- range(y[is.finite(y)], ylim)
+  y.prty <- pretty(y.range, n = lab[2], min.n = max(1, min(0.5 *lab[2], p.lab[2])))
+  y.scal <- round(diff(y.prty[1:2]), digits = 12)
+  y.add <- min(y.prty)
+  y <- (y - y.add)/y.scal
+  y.max <- (max(y.prty) - y.add)/y.scal
+  if (!is.null(ylim))
+    y.max <- max(y.max, ceiling((ylim[2] - y.add)/y.scal))
+  
+  # Z axis range
+  z.range <- range(z[is.finite(z)], zlim)
+  z.prty <- pretty(z.range, n = lab.z, min.n = max(1, min(0.5 *lab.z, p.lab[2])))
+  z.scal <- round(diff(z.prty[1:2]), digits = 12)
+  z <- z/z.scal
+  z.range <- range(z.prty)/z.scal
+  z.max <- ceiling(z.range[2])
+  z.min <- floor(z.range[1])
+  if (!is.null(zlim)) {
+    z.max <- max(z.max, ceiling(zlim[2]/z.scal))
+    z.min <- min(z.min, floor(zlim[1]/z.scal))
+  }
+  z.range <- range(z.min, z.max)
+  
+  # Add grid
+  if ("xy" %in% grid || grid == TRUE) {
+    i <- x.min:x.max
+    segments(i, z.min, i + (yx.f * y.max), yz.f * y.max + 
+               z.min, col = col.grid, lty = lty.grid)
+    i <- 0:y.max
+    segments(x.min + (i * yx.f), i * yz.f + z.min, x.max + 
+               (i * yx.f), i * yz.f + z.min, col = col.grid, lty = lty.grid)
+  }
+  
+  if ("xz" %in% grid) {
+    i <- x.min:x.max
+    segments(i + (yx.f * y.max), yz.f * y.max + z.min, 
+             i + (yx.f * y.max), yz.f * y.max + z.max, 
+             col = col.grid, lty = lty.grid)
+    temp <- yx.f * y.max
+    temp1 <- yz.f * y.max
+    i <- z.min:z.max
+    segments(x.min + temp,temp1 + i, 
+             x.max + temp,temp1 + i , col = col.grid, lty = lty.grid)
+    
+  }
+  
+  if ("yz" %in% grid) {
+    i <- 0:y.max
+    segments(x.min + (i * yx.f), i * yz.f + z.min,  
+             x.min + (i * yx.f) ,i * yz.f + z.max,  
+             col = col.grid, lty = lty.grid)
+    temp <- yx.f * y.max
+    temp1 <- yz.f * y.max
+    i <- z.min:z.max
+    segments(x.min + temp,temp1 + i, 
+             x.min, i , col = col.grid, lty = lty.grid)
+  }
+  
+}
+
+
+## Make the Actual Plots
 scatterplot3d(x = H1$outdegree_i, y = H1$indegree_j, z = H1$lincomb,
               xlab = "", #expression("Out-degree"[i]),
               ylab = "", #expression("In-degree"[j]),
@@ -2094,10 +2222,11 @@ scatterplot3d(x = H1$outdegree_i, y = H1$indegree_j, z = H1$lincomb,
               type = "p", # type = "p" == "points"
               pch = bullet.points[ifelse(H1$lincomb_p_value < 0.001, 1, 2)], 
               cex.symbols = bullet.size[ifelse(H1$lincomb_p_value < 0.001, 1, 2)],
-              grid = TRUE, box = FALSE,
+              grid = FALSE, box = FALSE,
               mar = c(5, 3, 1, 3), #  A numerical vector of the form c(bottom, left, top, right) which gives the lines of margin to be specified on the four sides of the plot.
               y.margin.add = 0.5, # add additional space between tick mark labels and axis label of the y axis
               col.axis = "#767676", col.grid = "#767676", col.lab = "#767676", col.main = "#767676")
+addgrids3d(x = H1$outdegree_i, y = H1$indegree_j, z = H1$lincomb, grid = c("xy", "xz", "yz"), zlim = c(-6, 1), col.grid = "#767676")
 
 scatterplot3d(x = H2$outdegree_i, y = H2$indegree_j, z = H2$lincomb,
               xlab = "", #expression("Out-degree"[i]),
@@ -2109,10 +2238,11 @@ scatterplot3d(x = H2$outdegree_i, y = H2$indegree_j, z = H2$lincomb,
               type = "p", # type = "p" == "points"
               pch = bullet.points[ifelse(H2$lincomb_p_value < 0.001, 1, 2)], 
               cex.symbols = bullet.size[ifelse(H2$lincomb_p_value < 0.001, 1, 2)],
-              grid = TRUE, box = FALSE,
+              grid = FALSE, box = FALSE,
               mar = c(5, 3, 1, 3), #  A numerical vector of the form c(bottom, left, top, right) which gives the lines of margin to be specified on the four sides of the plot.
               y.margin.add = 0.5, # add additional space between tick mark labels and axis label of the y axis
               col.axis = "#767676", col.grid = "#767676", col.lab = "#767676", col.main = "#767676")
+addgrids3d(x = H2$outdegree_i, y = H2$indegree_j, z = H2$lincomb, grid = c("xy", "xz", "yz"), zlim = c(-6, 1), col.grid = "#767676")
 
 scatterplot3d(x = H3$outdegree_i, y = H3$indegree_j, z = H3$lincomb,
               xlab = "", #expression("Out-degree"[i]),
@@ -2124,10 +2254,11 @@ scatterplot3d(x = H3$outdegree_i, y = H3$indegree_j, z = H3$lincomb,
               type = "p", # type = "p" == "points"
               pch = bullet.points[ifelse(H3$lincomb_p_value < 0.001, 1, 2)], 
               cex.symbols = bullet.size[ifelse(H3$lincomb_p_value < 0.001, 1, 2)],
-              grid = TRUE, box = FALSE,
+              grid = FALSE, box = FALSE,
               mar = c(5, 3, 1, 3), #  A numerical vector of the form c(bottom, left, top, right) which gives the lines of margin to be specified on the four sides of the plot.
               y.margin.add = 0.5, # add additional space between tick mark labels and axis label of the y axis
               col.axis = "#767676", col.grid = "#767676", col.lab = "#767676", col.main = "#767676")
+addgrids3d(x = H3$outdegree_i, y = H3$indegree_j, z = H3$lincomb, grid = c("xy", "xz", "yz"), zlim = c(-6, 1), col.grid = "#767676")
 
 scatterplot3d(x = H4$outdegree_i, y = H4$indegree_j, z = H4$lincomb,
               xlab = "", #expression("Out-degree"[i]),
@@ -2139,10 +2270,11 @@ scatterplot3d(x = H4$outdegree_i, y = H4$indegree_j, z = H4$lincomb,
               type = "p", # type = "p" == "points"
               pch = bullet.points[ifelse(H4$lincomb_p_value < 0.001, 1, 2)], 
               cex.symbols = bullet.size[ifelse(H4$lincomb_p_value < 0.001, 1, 2)],
-              grid = TRUE, box = FALSE,
+              grid = FALSE, box = FALSE,
               mar = c(5, 3, 1, 3), #  A numerical vector of the form c(bottom, left, top, right) which gives the lines of margin to be specified on the four sides of the plot.
               y.margin.add = 0.5, # add additional space between tick mark labels and axis label of the y axis
               col.axis = "#767676", col.grid = "#767676", col.lab = "#767676", col.main = "#767676")
+addgrids3d(x = H4$outdegree_i, y = H4$indegree_j, z = H4$lincomb, grid = c("xy", "xz", "yz"), zlim = c(-6, 1), col.grid = "#767676")
 
 scatterplot3d(x = H5a$outdegree, y = H5a$indegree_j, z = H5a$lincomb,
               x.ticklabs = c(0, 5, 10, 15, 20, 20, 20, 20) + 12, # This is to reflect the adjustment to out-degrees to keep them <= 32 given the closure of 12 two-aths
@@ -2156,10 +2288,11 @@ scatterplot3d(x = H5a$outdegree, y = H5a$indegree_j, z = H5a$lincomb,
               type = "p", # type = "p" == "points"
               pch = bullet.points[ifelse(H5a$lincomb_p_value < 0.001, 1, 2)], 
               cex.symbols = bullet.size[ifelse(H5a$lincomb_p_value < 0.001, 1, 2)],
-              grid = TRUE, box = FALSE,
+              grid = FALSE, box = FALSE,
               mar = c(5, 3, 1, 3), #  A numerical vector of the form c(bottom, left, top, right) which gives the lines of margin to be specified on the four sides of the plot.
               y.margin.add = 0.5, # add additional space between tick mark labels and axis label of the y axis
               col.axis = "#767676", col.grid = "#767676", col.lab = "#767676", col.main = "#767676")
+addgrids3d(x = H5a$outdegree_i, y = H5a$indegree_j, z = H5a$lincomb, grid = c("xy", "xz", "yz"), zlim = c(-1, 6), col.grid = "#767676")
 
 scatterplot3d(x = H5b$outdegree_i, y = H5b$indegree_j, z = H5b$lincomb,
               xlab = expression("Out-degree"[i]),
@@ -2171,10 +2304,11 @@ scatterplot3d(x = H5b$outdegree_i, y = H5b$indegree_j, z = H5b$lincomb,
               type = "p", # type = "p" == "points"
               pch = bullet.points[ifelse(H5b$lincomb_p_value < 0.001, 1, 2)], 
               cex.symbols = bullet.size[ifelse(H5b$lincomb_p_value < 0.001, 1, 2)],
-              grid = TRUE, box = FALSE,
+              grid = FALSE, box = FALSE,
               mar = c(5, 3, 1, 3), #  A numerical vector of the form c(bottom, left, top, right) which gives the lines of margin to be specified on the four sides of the plot.
               y.margin.add = 0.5, # add additional space between tick mark labels and axis label of the y axis
               col.axis = "#767676", col.grid = "#767676", col.lab = "#767676", col.main = "#767676")
+addgrids3d(x = H5b$outdegree_i, y = H5b$indegree_j, z = H5b$lincomb, grid = c("xy", "xz", "yz"), zlim = c(-6, 1), col.grid = "#767676")
 
 scatterplot3d(x = H6$outdegree_i, y = H6$indegree_j, z = H6$lincomb,
               xlab = expression("Out-degree"[i]),
@@ -2186,10 +2320,11 @@ scatterplot3d(x = H6$outdegree_i, y = H6$indegree_j, z = H6$lincomb,
               type = "p", # type = "p" == "points"
               pch = bullet.points[ifelse(H6$lincomb_p_value < 0.001, 1, 2)], 
               cex.symbols = bullet.size[ifelse(H6$lincomb_p_value < 0.001, 1, 2)],
-              grid = TRUE, box = FALSE,
+              grid = FALSE, box = FALSE,
               mar = c(5, 3, 1, 3), #  A numerical vector of the form c(bottom, left, top, right) which gives the lines of margin to be specified on the four sides of the plot.
               y.margin.add = 0.5, # add additional space between tick mark labels and axis label of the y axis
               col.axis = "#767676", col.grid = "#767676", col.lab = "#767676", col.main = "#767676")
+addgrids3d(x = H6$outdegree_i, y = H6$indegree_j, z = H6$lincomb, grid = c("xy", "xz", "yz"), zlim = c(-6, 1), col.grid = "#767676")
 
 scatterplot3d(x = H7$outdegree_i, y = H7$indegree_j, z = H7$lincomb,
               xlab = expression("Out-degree"[i]),
@@ -2201,14 +2336,16 @@ scatterplot3d(x = H7$outdegree_i, y = H7$indegree_j, z = H7$lincomb,
               type = "p", # type = "p" == "points"
               pch = bullet.points[ifelse(H7$lincomb_p_value < 0.001, 1, 2)], 
               cex.symbols = bullet.size[ifelse(H7$lincomb_p_value < 0.001, 1, 2)],
-              grid = TRUE, box = FALSE,
+              grid = FALSE, box = FALSE,
               mar = c(5, 3, 1, 3), #  A numerical vector of the form c(bottom, left, top, right) which gives the lines of margin to be specified on the four sides of the plot.
               y.margin.add = 0.5, # add additional space between tick mark labels and axis label of the y axis
               col.axis = "#767676", col.grid = "#767676", col.lab = "#767676", col.main = "#767676")
+addgrids3d(x = H7$outdegree_i, y = H7$indegree_j, z = H7$lincomb, grid = c("xy", "xz", "yz"), zlim = c(-6, 1), col.grid = "#767676")
 
 legend(x = -21, y = -7.5, legend = c("Women", "Men"), col = colors, pch = 16, cex = 2, text.col = "#767676", horiz = TRUE, bty = "n", xpd = NA)
 
-dev.off()   
+dev.off() ## Note, Placement/transparency of grid lines in Figure 5 are adjusted/finalised using Affinity Designer (i.e., vector-based graphics editor akin to Adobe Illustrator)
+
 
 
 
