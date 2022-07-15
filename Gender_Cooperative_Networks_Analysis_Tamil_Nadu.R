@@ -2745,3 +2745,4 @@ write.table(siena.coefs.tables[, c("beta_hat_M1", "se_beta_M1", "p_value_M1",
             file = "ST7_ModelEstimates.txt", sep = "\t", quote = FALSE, row.names = TRUE) ## Main Models
 
 
+
